@@ -30,16 +30,14 @@ class DiskutilList(pydantic.BaseModel):
     WholeDisks: list[str]
 
 
-def parse_plist_output(plist_output: dict) -> DiskutilList:
+def parse_diskutil_output(plist_output: dict) -> DiskutilList:
     return DiskutilList.parse_obj(plist_output)
 
 
-def diskutil_list_physical_external_disks() -> DiskutilList:
-    return DiskutilList.parse_obj(
-        plistlib.loads(
-            subprocess.run(
-                ["diskutil", "list", "-plist", "physical", "external"],
-                capture_output=True,
-            ).stdout
-        )
+def diskutil_list_physical_external_disks() -> dict:
+    return plistlib.loads(
+        subprocess.run(
+            ["diskutil", "list", "-plist", "physical", "external"],
+            capture_output=True,
+        ).stdout
     )

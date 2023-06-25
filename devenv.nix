@@ -1,7 +1,10 @@
 { pkgs, ... }:
 
 {
-  packages = [ pkgs.git ];
+  packages = [
+    pkgs.just
+    pkgs.git
+  ];
 
   enterShell = ''
     git --version
