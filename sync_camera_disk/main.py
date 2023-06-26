@@ -23,13 +23,15 @@ LOG: structlog.stdlib.BoundLogger = structlog.get_logger()
 
 
 @app.command()
-def diskutil_list_physical_external_disks():
+def diskutil_list_physical_external_disks() -> None:
     """Run diskutil to list disks and print parsed plist. MacOS only."""
     print(json.dumps(macos.diskutil_list_physical_external_disks()))
 
 
 @app.command()
-def list_disks(input: Annotated[typer.FileBinaryRead, typer.Option()] = None):
+def list_disks(
+    input: Annotated[typer.FileBinaryRead, typer.Option()] | None = None
+) -> None:
     """List all physical external disks"""
     raw_input = input.read() if input is not None else None
     for disk in sync_camera_disk.disks.list_disks(raw_input):
@@ -44,7 +46,7 @@ def sync(
     dry_run: bool = True,
     verbose: bool = False,
     use_json_logging: bool = False,
-):
+) -> None:
     rich.traceback.install(show_locals=True)
     log_level = logging.DEBUG if verbose else logging.INFO
     if use_json_logging:
@@ -64,13 +66,13 @@ def sync(
             wrapper_class=structlog.make_filtering_bound_logger(log_level),
         )
     config = parse_yaml_file_as(Config, config_path)
-    LOG.debug(config)
+    LOG.debug("config", config)
 
     disks_by_identifer: dict[str, sync_camera_disk.disks.DiskMount] = {
         d.unique_identifier: d for d in sync_camera_disk.disks.list_disks()
     }
 
-    counters = collections.Counter()
+    counters: collections.Counter[str] = collections.Counter()
 
     for sync in tqdm.tqdm(config.syncs, desc="Sync Operations"):
         if sync.source.identifier not in disks_by_identifer:
