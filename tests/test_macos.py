@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import sys
+from typing import Any
 
 import pytest
 
@@ -278,7 +279,7 @@ SONY_SD_DISKUTIL_LIST = DiskutilList(
     ],
     ids=["drobo", "dji_sd_card", "sony_a7_iv"],
 )
-def test_parse_plist_output(plist_output: dict, expected: DiskutilList):
+def test_parse_plist_output(plist_output: Any, expected: DiskutilList) -> None:
     # Do the dict version first for nicer diffs
     # TODO: find a pydantic mypy plugin for nice diffs
     assert parse_diskutil_output(plist_output).dict() == expected.dict()
@@ -286,5 +287,5 @@ def test_parse_plist_output(plist_output: dict, expected: DiskutilList):
 
 
 @pytest.mark.skipif(sys.platform != "darwin", reason="Only run on Mac")
-def test_diskutil_list_physical_external_disks_runs():
+def test_diskutil_list_physical_external_disks_runs() -> None:
     assert isinstance(diskutil_list_physical_external_disks(), dict)

@@ -59,5 +59,5 @@ from sync_camera_disk import disks
 )
 def test_mac_disks_to_disk_mounts(
     input: macos.DiskutilList, expected: list[disks.DiskMount]
-):
+) -> None:
     assert list(disks.mac_disks_to_disk_mounts(mac_disks=input)) == expected

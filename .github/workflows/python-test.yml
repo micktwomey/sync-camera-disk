@@ -1,0 +1,49 @@
+name: Python test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 8
+      matrix:
+        python-version: ["3.11", "3.12-dev"]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+          allow-prereleases: true
+      - name: Install poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+      - name: Install just
+        uses: extractions/setup-just@v1
+      - name: just test
+        run: poetry run just test
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+      - name: Install just
+        uses: extractions/setup-just@v1
+      - name: just test
+        run: poetry run just lint

@@ -15,7 +15,7 @@ class DiskMount(pydantic.BaseModel):
 def mac_disks_to_disk_mounts(mac_disks: macos.DiskutilList) -> Iterable[DiskMount]:
     for disk_and_partitions in mac_disks.AllDisksAndPartitions:
         for disk in disk_and_partitions.Partitions:
-            if disk.MountPoint is not None:
+            if disk.MountPoint is not None and disk.VolumeUUID is not None:
                 yield DiskMount(
                     path=pathlib.Path(disk.MountPoint),
                     unique_identifier=disk.VolumeUUID.lower(),

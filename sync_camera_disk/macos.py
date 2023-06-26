@@ -1,6 +1,7 @@
 import pathlib
 import plistlib
 import subprocess
+from typing import Any
 
 import pydantic
 
@@ -30,11 +31,11 @@ class DiskutilList(pydantic.BaseModel):
     WholeDisks: list[str]
 
 
-def parse_diskutil_output(plist_output: dict) -> DiskutilList:
+def parse_diskutil_output(plist_output: Any) -> DiskutilList:
     return DiskutilList.parse_obj(plist_output)
 
 
-def diskutil_list_physical_external_disks() -> dict:
+def diskutil_list_physical_external_disks() -> Any:
     return plistlib.loads(
         subprocess.run(
             ["diskutil", "list", "-plist", "physical", "external"],

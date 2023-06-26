@@ -1,8 +1,27 @@
 project := "sync-camera-disk"
 
+default: lint test
+
+test: pytest
+
 # Run pytest
 pytest:
     pytest -vv --cov=sync_camera_disk --cov-report=html --cov-branch --cov-context=test
+
+# Run all linting actions
+lint: ruff mypy black
+
+# Lint code with ruff
+ruff COMMAND="check" *ARGS=".":
+    poetry run ruff {{COMMAND}} {{ARGS}}
+
+# Check code with Mypy
+mypy *ARGS=".":
+    poetry run mypy {{ARGS}}
+
+# Check files with black
+black *ARGS=".":
+    poetry run black {{ARGS}}
 
 # Add a CHANGELOG.md entry, e.g. just changelog-add added "My entry"
 changelog-add TYPE ENTRY:
