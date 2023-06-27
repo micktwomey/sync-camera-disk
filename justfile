@@ -1,6 +1,6 @@
 project := "sync-camera-disk"
 
-default: lint test
+default: pre-commit lint test
 
 test: pytest
 
@@ -22,6 +22,10 @@ mypy *ARGS=".":
 # Check files with black
 black *ARGS=".":
     poetry run black {{ARGS}}
+
+# Run pre-commit
+pre-commit COMMAND="run" *ARGS="--all-files":
+    poetry run pre-commit {{COMMAND}} {{ARGS}}
 
 # Add a CHANGELOG.md entry, e.g. just changelog-add added "My entry"
 changelog-add TYPE ENTRY:
