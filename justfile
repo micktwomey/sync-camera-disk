@@ -6,6 +6,10 @@ test: pytest
 
 # Run pytest
 pytest:
+    poetry run pytest -vv
+
+# Run pytest with coverage
+coverage:
     poetry run pytest -vv --cov=sync_camera_disk --cov-report=html --cov-branch --cov-context=test
 
 # Run all linting actions
