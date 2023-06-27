@@ -1,6 +1,7 @@
 import enum
 from pathlib import Path
 import shutil
+from typing import Callable
 
 from pydantic import BaseModel
 
@@ -26,25 +27,35 @@ class OperationResult(BaseModel):
     dry_run: bool
 
 
-def perform_operation(operation: Operation, dry_run: bool = True) -> OperationResult:
+def mkdir(path: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True)
+
+
+def perform_operation(
+    operation: Operation,
+    dry_run: bool = True,
+    mkdir: Callable[[Path], None] = mkdir,
+    copy: Callable[[str | Path, str | Path], None] = shutil.copy2,
+    copystat: Callable[[str | Path, str | Path], None] = shutil.copystat,
+) -> OperationResult:
     try:
         match operation.operation:
             case OperationType.copy:
                 if not dry_run:
-                    operation.destination.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(operation.source, operation.destination)
+                    mkdir(operation.destination.parent)
+                    copy(operation.source, operation.destination)
             case OperationType.identical:
                 pass
             case OperationType.copy_stat:
                 if not dry_run:
-                    shutil.copystat(operation.source, operation.destination)
+                    copystat(operation.source, operation.destination)
             case _:
                 raise NotImplementedError(operation)
     except Exception as e:
         return OperationResult(
             operation=operation,
             success=False,
-            exception=str(type(e)),
+            exception=e.__class__.__name__,
             error=str(e),
             dry_run=dry_run,
         )
