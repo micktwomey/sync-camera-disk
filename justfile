@@ -1,12 +1,12 @@
 project := "sync-camera-disk"
 
-default: lint test
+default: pre-commit lint test
 
 test: pytest
 
 # Run pytest
 pytest:
-    pytest -vv --cov=sync_camera_disk --cov-report=html --cov-branch --cov-context=test
+    poetry run pytest -vv --cov=sync_camera_disk --cov-report=html --cov-branch --cov-context=test
 
 # Run all linting actions
 lint: ruff mypy black
@@ -23,19 +23,23 @@ mypy *ARGS=".":
 black *ARGS=".":
     poetry run black {{ARGS}}
 
+# Run pre-commit
+pre-commit COMMAND="run" *ARGS="--all-files":
+    poetry run pre-commit {{COMMAND}} {{ARGS}}
+
 # Add a CHANGELOG.md entry, e.g. just changelog-add added "My entry"
 changelog-add TYPE ENTRY:
-    changelog-manager add {{TYPE}} "{{ENTRY}}"
+    poetry run changelog-manager add {{TYPE}} "{{ENTRY}}"
 
 # Find out what your next released version might be based on the changelog.
 next-version:
-    changelog-manager suggest
+    poetry run changelog-manager suggest
 
 # Build and create files for a release
 prepare-release:
     #!/bin/bash
     set -xeuo pipefail
-    changelog-manager release
+    poetry run changelog-manager release
     poetry version $(changelog-manager current)
     rm -rvf dist
     poetry build
@@ -44,7 +48,7 @@ prepare-release:
 do-release:
     #!/bin/bash
     set -xeuo pipefail
-    VERSION=$(changelog-manager current)
+    VERSION=$(poetry run changelog-manager current)
     POETRY_VERSION=$(poetry version -s)
     if [ "${VERSION}" != "${POETRY_VERSION}" ]; then
         echo "Mismatch between changelog version ${VERSION} and poetry version ${VERSION}"
@@ -52,7 +56,7 @@ do-release:
     fi
     git add pyproject.toml CHANGELOG.md
     mkdir -p build
-    changelog-manager display --version $VERSION > build/release-notes.md
+    poetry run changelog-manager display --version $VERSION > build/release-notes.md
     if [ ! -f dist/{{project}}-${VERSION}.tar.gz ]; then
         echo "Missing expected file in dist, did you run 'just prepare-release'?"
         exit 1
