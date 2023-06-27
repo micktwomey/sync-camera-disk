@@ -5,12 +5,12 @@ default: pre-commit lint test
 test: pytest
 
 # Run pytest
-pytest:
-    poetry run pytest -vv
+pytest *ARGS="-vv":
+    poetry run pytest {{ARGS}}
 
 # Run pytest with coverage
-coverage:
-    poetry run pytest -vv --cov=sync_camera_disk --cov-report=html --cov-branch --cov-context=test
+coverage *ARGS="-vv --cov=sync_camera_disk --cov-report=html --cov-branch --cov-context=test":
+    poetry run pytest {{ARGS}}
 
 # Run all linting actions
 lint: ruff mypy black
