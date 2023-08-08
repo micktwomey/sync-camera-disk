@@ -13,6 +13,6 @@ Overall approach:
 3. Build a list of files to copy (each file should be a set of files to keep related files together)
 4. Use mapping to translate files to destination names
 5. Lookup files in destination to determine which need to be copied (for existing files use stat to determine if they are the same)
-6. Build hashes for verification of files
+6. (TODO) Build hashes for verification of files
 
 By default treat identically named files which different metadata as an error.
