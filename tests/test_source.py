@@ -45,6 +45,77 @@ def test_enumerate_source_files_dji_mini_3_pro(disk_mount: DiskMount) -> None:
     ]
 
 
+def test_enumerate_source_files_insta360_go_2(disk_mount: DiskMount) -> None:
+    media = disk_mount.path / "DCIM" / "Camera01"
+    media.mkdir(parents=True)
+    (media / "LRV_20210320_172249_01_001.mp4").touch()
+    (media / "PRO_LRV_20210320_172314_01_002.mp4").touch()
+    (media / "PRO_VID_20210320_172314_00_002.mp4").touch()
+    (media / "VID_20210320_172249_00_001.mp4").touch()
+    (disk_mount.path / "DCIM" / "fileinfo_list.list").touch()
+    file_sets = list(
+        source.enumerate_source_files(
+            source=disk_mount, source_type=SourceType.insta360_go_2
+        )
+    )
+
+    # Sort files for comparison
+    for fs in file_sets:
+        fs.files.sort(key=lambda x: x.path)
+    file_sets.sort(key=lambda x: x.files[0].path)
+
+    assert file_sets == [
+        FileSet(
+            files=[
+                File(
+                    path=disk_mount.path
+                    / "DCIM/Camera01/LRV_20210320_172249_01_001.mp4"
+                ),
+            ],
+            stem="LRV_20210320_172249_01_001",
+            prefix=Path("DCIM/Camera01"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(
+                    path=disk_mount.path
+                    / "DCIM/Camera01/PRO_LRV_20210320_172314_01_002.mp4"
+                ),
+            ],
+            stem="PRO_LRV_20210320_172314_01_002",
+            prefix=Path("DCIM/Camera01"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(
+                    path=disk_mount.path
+                    / "DCIM/Camera01/PRO_VID_20210320_172314_00_002.mp4"
+                ),
+            ],
+            stem="PRO_VID_20210320_172314_00_002",
+            prefix=Path("DCIM/Camera01"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(
+                    path=disk_mount.path
+                    / "DCIM/Camera01/VID_20210320_172249_00_001.mp4"
+                ),
+            ],
+            stem="VID_20210320_172249_00_001",
+            prefix=Path("DCIM/Camera01"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+    ]
+
+
 def test_enumerate_source_files_sony_a7_iv(disk_mount: DiskMount) -> None:
     dcim = disk_mount.path / "DCIM" / "10030620"
     dcim.mkdir(parents=True)
