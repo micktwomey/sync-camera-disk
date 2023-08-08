@@ -9,10 +9,13 @@ from .operation import Operation, OperationType
 
 
 def is_file_identical(a: Path, b: Path) -> bool:
-    # TODO: add hash checking!
     stat_a = a.stat()
     stat_b = b.stat()
-    return (stat_a.st_ctime == stat_b.st_ctime) and (stat_a.st_size == stat_b.st_size)
+    # Can't use mtime or ctime as these don't accurately copy over.
+    # ctime can't be modified easily either.
+    # For now assume size and name are enough to test equality
+    # TODO: add hash checking!
+    return (a.name == b.name) and (stat_a.st_size == stat_b.st_size)
 
 
 class DatedFolderDestination(BaseModel):
@@ -32,11 +35,11 @@ class DatedFolderDestination(BaseModel):
             )
             if not destination_path.exists():
                 operation_type = OperationType.copy
-            elif (
-                destination_path.exists()
-                and file.path.stat().st_size == destination_path.stat().st_size
-            ):
-                operation_type = OperationType.copy_stat
+            # elif (
+            #     destination_path.exists()
+            #     and file.path.stat().st_size == destination_path.stat().st_size
+            # ):
+            #     operation_type = OperationType.copy_stat
             elif destination_path.exists() and is_file_identical(
                 file.path, destination_path
             ):

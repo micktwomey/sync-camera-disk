@@ -66,7 +66,7 @@ def sync(
             wrapper_class=structlog.make_filtering_bound_logger(log_level),
         )
     config = parse_yaml_file_as(Config, config_path)
-    LOG.debug("config", config)
+    LOG.debug("config", config=config)
 
     disks_by_identifer: dict[str, sync_camera_disk.disks.DiskMount] = {
         d.unique_identifier: d for d in sync_camera_disk.disks.list_disks()
