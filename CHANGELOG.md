@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Only show progress for mounted disks
+- Fix CHANGELOG links
 
 ## [0.1.0] - 2023-05-22
 ### Added
@@ -19,5 +20,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for DJI Mini 3 Pro drone SD card
 - Add support for Sony A7 IV memory cards
 
-[Unreleased]: https://github.com/micktwomey/pingertron/compare/0.1.0...HEAD
-[0.1.0]: https://github.com/micktwomey/pingertron/releases/tag/0.1.0
+[Unreleased]: https://github.com/micktwomey/sync-camera-disk/compare/0.1.0...HEAD
+[0.1.0]: https://github.com/micktwomey/sync-camera-disk/releases/tag/0.1.0
