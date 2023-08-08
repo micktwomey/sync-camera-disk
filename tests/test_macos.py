@@ -269,6 +269,56 @@ SONY_SD_DISKUTIL_LIST = DiskutilList(
     WholeDisks=["disk2", "disk4", "disk5", "disk6", "disk7"],
 )
 
+INSTA360_GO_2_PLIST_OUTPUT = json.load(
+    (EXAMPLES / "mac_diskutil_insta360_go_2.json").open()
+)
+
+INSTA360_GO_2_DISKUTIL_LIST = DiskutilList(
+    AllDisks=["disk2", "disk2s1", "disk2s2", "disk4", "disk4s1"],
+    AllDisksAndPartitions=[
+        DiskAndPartitions(
+            Content="GUID_partition_scheme",
+            DeviceIdentifier="disk2",
+            OSInternal=False,
+            Partitions=[
+                Partition(
+                    Content="EFI",
+                    DeviceIdentifier="disk2s1",
+                    Size=209715200,
+                    DiskUUID="0336DDD3-364A-4AFE-B474-5F63EF2B2D21",
+                    VolumeName="EFI",
+                    VolumeUUID="0E239BC6-F960-3107-89CF-1C97F78BB46B",
+                ),
+                Partition(
+                    Content="Apple_APFS",
+                    DeviceIdentifier="disk2s2",
+                    Size=2000189177856,
+                    DiskUUID="8F050760-6FEF-4491-8D7D-547C6EF0F165",
+                ),
+            ],
+            Size=2000398934016,
+        ),
+        DiskAndPartitions(
+            Content="FDisk_partition_scheme",
+            DeviceIdentifier="disk4",
+            OSInternal=False,
+            Partitions=[
+                Partition(
+                    Content="Windows_NTFS",
+                    DeviceIdentifier="disk4s1",
+                    Size=30798242304,
+                    MountPoint="/Volumes/Insta360GO2",
+                    VolumeName="Insta360GO2",
+                    VolumeUUID="C8BF5026-0077-3F03-AA08-019E0A1DC444",
+                ),
+            ],
+            Size=30802436608,
+        ),
+    ],
+    VolumesFromDisks=["Insta360GO2"],
+    WholeDisks=["disk2", "disk4"],
+)
+
 
 @pytest.mark.parametrize(
     "plist_output,expected",
@@ -276,8 +326,9 @@ SONY_SD_DISKUTIL_LIST = DiskutilList(
         (DROBO_PLIST_OUTPUT, DROBO_DISKUTIL_LIST),
         (DJI_SD_CARD_PLIST_OUTPUT, DJI_SD_DISKUTIL_LIST),
         (SONY_SD_CARD_PLIST_OUTPUT, SONY_SD_DISKUTIL_LIST),
+        (INSTA360_GO_2_PLIST_OUTPUT, INSTA360_GO_2_DISKUTIL_LIST),
     ],
-    ids=["drobo", "dji_sd_card", "sony_a7_iv"],
+    ids=["drobo", "dji_sd_card", "sony_a7_iv", "insta360_go_2"],
 )
 def test_parse_plist_output(plist_output: Any, expected: DiskutilList) -> None:
     # Do the dict version first for nicer diffs

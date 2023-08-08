@@ -74,7 +74,10 @@ def sync(
 
     counters: collections.Counter[str] = collections.Counter()
 
-    for sync in tqdm.tqdm(config.syncs, desc="Sync Operations"):
+    # Filter down to ones with mounted disks
+    syncs = [s for s in config.syncs if s.source.identifier in disks_by_identifer]
+
+    for sync in tqdm.tqdm(syncs, desc="Sync Operations"):
         if sync.source.identifier not in disks_by_identifer:
             continue
         source_disk = disks_by_identifer[sync.source.identifier]

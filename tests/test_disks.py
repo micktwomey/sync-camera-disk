@@ -1,6 +1,11 @@
 from pathlib import Path
 
-from test_macos import DROBO_DISKUTIL_LIST, SONY_SD_DISKUTIL_LIST, DJI_SD_DISKUTIL_LIST
+from test_macos import (
+    DROBO_DISKUTIL_LIST,
+    SONY_SD_DISKUTIL_LIST,
+    DJI_SD_DISKUTIL_LIST,
+    INSTA360_GO_2_DISKUTIL_LIST,
+)
 
 import pytest
 
@@ -54,8 +59,17 @@ from sync_camera_disk import disks
                 ),
             ],
         ),
+        (
+            INSTA360_GO_2_DISKUTIL_LIST,
+            [
+                disks.DiskMount(
+                    path=Path("/Volumes/Insta360GO2"),
+                    unique_identifier="c8bf5026-0077-3f03-aa08-019e0a1dc444",
+                ),
+            ],
+        ),
     ],
-    ids=["drobo", "dji", "sony"],
+    ids=["drobo", "dji", "sony", "insta360_go_2"],
 )
 def test_mac_disks_to_disk_mounts(
     input: macos.DiskutilList, expected: list[disks.DiskMount]

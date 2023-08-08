@@ -61,5 +61,25 @@ def enumerate_source_files(
                     )
                 all_files_by_prefix[stem].files.append(File(path=p))
             yield from all_files_by_prefix.values()
+        case SourceType.insta360_go_2:
+            # /Volumes/Insta360GO2/DCIM/Camera01/VID_20210320_172249_00_001.mp4
+            # /Volumes/Insta360GO2/DCIM/Camera01/LRV_20210320_172249_01_001.mp4
+            # /Volumes/Insta360GO2/DCIM/Camera01/PRO_VID_20210320_172314_00_002.mp4
+            # /Volumes/Insta360GO2/DCIM/Camera01/PRO_LRV_20210320_172314_01_002.mp4
+            # Probably not needed: /Volumes/Insta360GO2/DCIM/fileinfo_list.list
+            all_files_by_prefix = {}
+            for p in (source.path / "DCIM" / "Camera01").glob("*"):
+                stem = p.stem
+                if stem not in all_files_by_prefix:
+                    all_files_by_prefix[stem] = FileSet(
+                        files=[],
+                        stem=stem,
+                        prefix=p.parent.relative_to(source.path),
+                        volume_path=source.path,
+                        volume_identifier=source.unique_identifier,
+                    )
+                all_files_by_prefix[stem].files.append(File(path=p))
+            yield from all_files_by_prefix.values()
+
         case _:
             raise NotImplementedError(source_type)
