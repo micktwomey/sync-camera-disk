@@ -45,6 +45,102 @@ def test_enumerate_source_files_dji_mini_3_pro(disk_mount: DiskMount) -> None:
     ]
 
 
+def test_enumerate_source_files_dji_osmo_pocket(disk_mount: DiskMount) -> None:
+    # /Volumes/Untitled/DCIM/100MEDIA/DJI_0018.html
+    # /Volumes/Untitled/DCIM/100MEDIA/DJI_0019.JPG
+    # /Volumes/Untitled/DCIM/100MEDIA/DJI_0020.MOV
+    # /Volumes/Untitled/DCIM/100MEDIA/._DJI_0235.MOV
+    # /Volumes/Untitled/DCIM/100MEDIA/DJI_0241.MP4
+    # /Volumes/Untitled/DCIM/PANORAMA/100_0018/DJI_0001.JPG
+    # /Volumes/Untitled/DCIM/PANORAMA/100_0018/DJI_0002.JPG
+    media = disk_mount.path / "DCIM" / "100MEDIA"
+    media.mkdir(parents=True)
+    (media / "DJI_0018.html").touch()
+    (media / "DJI_0019.JPG").touch()
+    (media / "DJI_0020.MOV").touch()
+    (media / "._DJI_0235.MOV").touch()
+    (media / "DJI_0241.MP4").touch()
+
+    panorama = disk_mount.path / "DCIM" / "PANORAMA"
+    panorama.mkdir(parents=True)
+    (panorama / "100_0018").mkdir(parents=True)
+    (panorama / "100_0018/DJI_0001.JPG").touch()
+    (panorama / "100_0018/DJI_0002.JPG").touch()
+    (panorama / "100_0019").mkdir(parents=True)
+    (panorama / "100_0019/DJI_0001.JPG").touch()
+    (panorama / "100_0019/DJI_0002.JPG").touch()
+
+    file_sets = list(
+        source.enumerate_source_files(
+            source=disk_mount, source_type=SourceType.dji_osmo_pocket
+        )
+    )
+
+    # Sort files for comparison
+    for fs in file_sets:
+        fs.files.sort(key=lambda x: x.path)
+    file_sets.sort(key=lambda x: x.files[0].path)
+
+    assert file_sets == [
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/100MEDIA/DJI_0018.html"),
+            ],
+            stem="DJI_0018",
+            prefix=Path("DCIM/100MEDIA"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/100MEDIA/DJI_0019.JPG"),
+            ],
+            stem="DJI_0019",
+            prefix=Path("DCIM/100MEDIA"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/100MEDIA/DJI_0020.MOV"),
+            ],
+            stem="DJI_0020",
+            prefix=Path("DCIM/100MEDIA"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/100MEDIA/DJI_0241.MP4"),
+            ],
+            stem="DJI_0241",
+            prefix=Path("DCIM/100MEDIA"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/PANORAMA/100_0018/DJI_0001.JPG"),
+                File(path=disk_mount.path / "DCIM/PANORAMA/100_0018/DJI_0002.JPG"),
+            ],
+            stem="100_0018",
+            prefix=Path("DCIM/PANORAMA/100_0018/"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/PANORAMA/100_0019/DJI_0001.JPG"),
+                File(path=disk_mount.path / "DCIM/PANORAMA/100_0019/DJI_0002.JPG"),
+            ],
+            stem="100_0019",
+            prefix=Path("DCIM/PANORAMA/100_0019/"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+    ]
+
+
 def test_enumerate_source_files_insta360_go_2(disk_mount: DiskMount) -> None:
     media = disk_mount.path / "DCIM" / "Camera01"
     media.mkdir(parents=True)

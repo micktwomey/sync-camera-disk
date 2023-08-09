@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add tests
 - Add a CHANGELOG
 - Add support for Insta360 GO 2
+- Add support for DJI Osmo Pocket
 
 ### Fixed
 - Only show progress for mounted disks

@@ -6,6 +6,7 @@ import pydantic
 
 class SourceType(enum.StrEnum):
     dji_mini_3_pro = "dji_mini_3_pro"
+    dji_osmo_pocket = "dji_osmo_pocket"
     sony_a7_iv = "sony_a7_iv"
     insta360_go_2 = "insta360_go_2"
 

@@ -1,9 +1,18 @@
 from pathlib import Path
+import sys
+from typing import Any
+from unittest.mock import patch
 
 from test_macos import (
+    DROBO_PLIST_OUTPUT,
     DROBO_DISKUTIL_LIST,
+    SONY_SD_CARD_PLIST_OUTPUT,
     SONY_SD_DISKUTIL_LIST,
+    DJI_SD_CARD_PLIST_OUTPUT,
     DJI_SD_DISKUTIL_LIST,
+    DJI_OSMO_POCKET_SD_CARD_PLIST_OUTPUT,
+    DJI_OSMO_POCKET_SD_DISKUTIL_LIST,
+    INSTA360_GO_2_PLIST_OUTPUT,
     INSTA360_GO_2_DISKUTIL_LIST,
 )
 
@@ -14,9 +23,10 @@ from sync_camera_disk import disks
 
 
 @pytest.mark.parametrize(
-    "input, expected",
+    "plist, input, expected",
     [
         (
+            DROBO_PLIST_OUTPUT,
             DROBO_DISKUTIL_LIST,
             [
                 disks.DiskMount(
@@ -30,6 +40,7 @@ from sync_camera_disk import disks
             ],
         ),
         (
+            DJI_SD_CARD_PLIST_OUTPUT,
             DJI_SD_DISKUTIL_LIST,
             [
                 disks.DiskMount(
@@ -39,6 +50,17 @@ from sync_camera_disk import disks
             ],
         ),
         (
+            DJI_OSMO_POCKET_SD_CARD_PLIST_OUTPUT,
+            DJI_OSMO_POCKET_SD_DISKUTIL_LIST,
+            [
+                disks.DiskMount(
+                    path=Path("/Volumes/Untitled"),
+                    unique_identifier="c8bf5026-0077-3f03-aa08-019e0a1dc444",
+                ),
+            ],
+        ),
+        (
+            SONY_SD_CARD_PLIST_OUTPUT,
             SONY_SD_DISKUTIL_LIST,
             [
                 disks.DiskMount(
@@ -60,6 +82,7 @@ from sync_camera_disk import disks
             ],
         ),
         (
+            INSTA360_GO_2_PLIST_OUTPUT,
             INSTA360_GO_2_DISKUTIL_LIST,
             [
                 disks.DiskMount(
@@ -69,9 +92,21 @@ from sync_camera_disk import disks
             ],
         ),
     ],
-    ids=["drobo", "dji", "sony", "insta360_go_2"],
+    ids=["drobo", "dji", "dji_osmo_pocket", "sony", "insta360_go_2"],
 )
 def test_mac_disks_to_disk_mounts(
-    input: macos.DiskutilList, expected: list[disks.DiskMount]
+    plist: Any,
+    input: macos.DiskutilList,
+    expected: list[disks.DiskMount],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     assert list(disks.mac_disks_to_disk_mounts(mac_disks=input)) == expected
+
+    monkeypatch.setattr(sys, "platform", "darwin")
+
+    with patch(
+        "sync_camera_disk.disks.macos.diskutil_list_physical_external_disks"
+    ) as diskutil_list_physical_external_disks:
+        diskutil_list_physical_external_disks.return_value = plist
+
+        assert list(disks.list_disks()) == expected
