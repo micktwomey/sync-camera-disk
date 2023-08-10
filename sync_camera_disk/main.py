@@ -44,30 +44,13 @@ def sync(
         pathlib.Path, typer.Argument(help="Path to probes.yml config")
     ],
     dry_run: bool = True,
-    verbose: bool = False,
-    use_json_logging: bool = False,
 ) -> None:
-    rich.traceback.install(show_locals=True)
-    log_level = logging.DEBUG if verbose else logging.INFO
-    if use_json_logging:
-        # Configure same processor stack as default, minus dev bits
-        structlog.configure(
-            processors=[
-                structlog.contextvars.merge_contextvars,
-                structlog.processors.add_log_level,
-                structlog.processors.StackInfoRenderer(),
-                structlog.processors.TimeStamper(fmt="iso", utc=True),
-                structlog.processors.JSONRenderer(),
-            ],
-            wrapper_class=structlog.make_filtering_bound_logger(log_level),
-        )
-    else:
-        structlog.configure(
-            wrapper_class=structlog.make_filtering_bound_logger(log_level),
-        )
     config = parse_yaml_file_as(Config, config_path)
     LOG.debug("config", config=config)
 
+    # TODO: it looks like different SD cards can have the same volume uuid,
+    # might need another mechamism to differentiate, especially when files
+    # are similarly layed out. VolumeName seems to be a helpful hint, as is size
     disks_by_identifer: dict[str, sync_camera_disk.disks.DiskMount] = {
         d.unique_identifier: d for d in sync_camera_disk.disks.list_disks()
     }
@@ -111,3 +94,28 @@ def sync(
                 if dry_run:
                     counters["dry_run"] += 1
     LOG.info("counters", **counters)
+
+
+@app.callback()
+def main(
+    verbose: bool = False,
+    use_json_logging: bool = False,
+) -> None:
+    rich.traceback.install(show_locals=True)
+    log_level = logging.DEBUG if verbose else logging.INFO
+    if use_json_logging:
+        # Configure same processor stack as default, minus dev bits
+        structlog.configure(
+            processors=[
+                structlog.contextvars.merge_contextvars,
+                structlog.processors.add_log_level,
+                structlog.processors.StackInfoRenderer(),
+                structlog.processors.TimeStamper(fmt="iso", utc=True),
+                structlog.processors.JSONRenderer(),
+            ],
+            wrapper_class=structlog.make_filtering_bound_logger(log_level),
+        )
+    else:
+        structlog.configure(
+            wrapper_class=structlog.make_filtering_bound_logger(log_level),
+        )

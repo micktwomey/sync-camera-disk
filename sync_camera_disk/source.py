@@ -80,6 +80,41 @@ def enumerate_source_files(
                     )
                 all_files_by_prefix[stem].files.append(File(path=p))
             yield from all_files_by_prefix.values()
+        case SourceType.dji_osmo_pocket:
+            # /Volumes/Untitled/DCIM/100MEDIA/DJI_0018.html
+            # /Volumes/Untitled/DCIM/100MEDIA/DJI_0019.JPG
+            # /Volumes/Untitled/DCIM/100MEDIA/DJI_0020.MOV
+            # /Volumes/Untitled/DCIM/100MEDIA/._DJI_0235.MOV
+            # /Volumes/Untitled/DCIM/100MEDIA/DJI_0241.MP4
+            all_files_by_prefix = {}
+            for p in (source.path / "DCIM" / "100MEDIA").glob("DJI_*"):
+                stem = p.stem
+                if stem not in all_files_by_prefix:
+                    all_files_by_prefix[stem] = FileSet(
+                        files=[],
+                        stem=stem,
+                        prefix=p.parent.relative_to(source.path),
+                        volume_path=source.path,
+                        volume_identifier=source.unique_identifier,
+                    )
+                all_files_by_prefix[stem].files.append(File(path=p))
+            yield from all_files_by_prefix.values()
 
+            # /Volumes/Untitled/DCIM/PANORAMA/100_0018
+            # /Volumes/Untitled/DCIM/PANORAMA/100_0018/DJI_0001.JPG
+            # /Volumes/Untitled/DCIM/PANORAMA/100_0018/DJI_0002.JPG
+            all_files_by_prefix = {}
+            for p in (source.path / "DCIM" / "PANORAMA").glob("*/DJI_*"):
+                stem = p.parent.name
+                if stem not in all_files_by_prefix:
+                    all_files_by_prefix[stem] = FileSet(
+                        files=[],
+                        stem=stem,
+                        prefix=p.parent.relative_to(source.path),
+                        volume_path=source.path,
+                        volume_identifier=source.unique_identifier,
+                    )
+                all_files_by_prefix[stem].files.append(File(path=p))
+            yield from all_files_by_prefix.values()
         case _:
             raise NotImplementedError(source_type)
