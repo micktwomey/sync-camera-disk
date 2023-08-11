@@ -255,3 +255,53 @@ def test_enumerate_source_files_sony_a7_iv(disk_mount: DiskMount) -> None:
             volume_path=disk_mount.path,
         ),
     ]
+
+
+def test_enumerate_source_files_insta360_one(disk_mount: DiskMount) -> None:
+    # /Volumes/Untitled/DCIM/Camera01/IMG_20171217_115531_054.insp
+    # /Volumes/Untitled/DCIM/Camera01/._IMG_20171214_180905_018.insp
+    # /Volumes/Untitled/DCIM/Camera01/._VID_20171214_180827_017.insv
+    # /Volumes/Untitled/DCIM/Camera01/._VID_20171214_181119_020.insv
+    # /Volumes/Untitled/DCIM/Camera01/VID_20171222_153701_058.insv
+    media = disk_mount.path / "DCIM" / "Camera01"
+    media.mkdir(parents=True)
+    (media / "IMG_20171217_115531_054.insp").touch()
+    (media / "._IMG_20171214_180905_018.insp").touch()
+    (media / "._VID_20171214_180827_017.insv").touch()
+    (media / "._VID_20171214_181119_020.insv").touch()
+    (media / "VID_20171222_153701_058.insv").touch()
+    file_sets = list(
+        source.enumerate_source_files(
+            source=disk_mount, source_type=SourceType.insta360_one
+        )
+    )
+
+    # Sort files for comparison
+    for fs in file_sets:
+        fs.files.sort(key=lambda x: x.path)
+    file_sets.sort(key=lambda x: x.files[0].path)
+
+    assert file_sets == [
+        FileSet(
+            files=[
+                File(
+                    path=disk_mount.path / "DCIM/Camera01/IMG_20171217_115531_054.insp"
+                ),
+            ],
+            stem="IMG_20171217_115531_054",
+            prefix=Path("DCIM/Camera01"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(
+                    path=disk_mount.path / "DCIM/Camera01/VID_20171222_153701_058.insv"
+                ),
+            ],
+            stem="VID_20171222_153701_058",
+            prefix=Path("DCIM/Camera01"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+    ]

@@ -1,9 +1,13 @@
 from typing import Iterable
 
+import structlog
+
 from .disks import DiskMount
 from .file import FileSet, File
 
 from .config import SourceType
+
+LOG: structlog.stdlib.BoundLogger = structlog.get_logger()
 
 
 def enumerate_source_files(
@@ -106,6 +110,27 @@ def enumerate_source_files(
             all_files_by_prefix = {}
             for p in (source.path / "DCIM" / "PANORAMA").glob("*/DJI_*"):
                 stem = p.parent.name
+                if stem not in all_files_by_prefix:
+                    all_files_by_prefix[stem] = FileSet(
+                        files=[],
+                        stem=stem,
+                        prefix=p.parent.relative_to(source.path),
+                        volume_path=source.path,
+                        volume_identifier=source.unique_identifier,
+                    )
+                all_files_by_prefix[stem].files.append(File(path=p))
+            yield from all_files_by_prefix.values()
+        case SourceType.insta360_one:
+            # /Volumes/Untitled/DCIM/Camera01/IMG_20171217_115531_054.insp
+            # /Volumes/Untitled/DCIM/Camera01/._IMG_20171214_180905_018.insp
+            # /Volumes/Untitled/DCIM/Camera01/._VID_20171214_180827_017.insv
+            # /Volumes/Untitled/DCIM/Camera01/._VID_20171214_181119_020.insv
+            # /Volumes/Untitled/DCIM/Camera01/VID_20171222_153701_058.insv
+            all_files_by_prefix = {}
+            for p in (source.path / "DCIM" / "Camera01").glob("*"):
+                stem = p.stem
+                if stem.startswith("._"):
+                    continue
                 if stem not in all_files_by_prefix:
                     all_files_by_prefix[stem] = FileSet(
                         files=[],
