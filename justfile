@@ -1,4 +1,4 @@
-project := "sync-camera-disk"
+project := "sync_camera_disk"
 
 default: pre-commit lint test
 
