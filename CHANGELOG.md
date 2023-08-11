@@ -10,10 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add a CHANGELOG
 - Add support for Insta360 GO 2
 - Add support for DJI Osmo Pocket
+- Add generate-config command to generate sample configs for connected disks
+- Add show-syncs command to show which disks matched up to which configs
 
 ### Fixed
 - Only show progress for mounted disks
 - Fix CHANGELOG links
+- Better handle identifying disks with non-unique unique identifiers via more disk metadata
 
 ## [0.1.0] - 2023-05-22
 ### Added
