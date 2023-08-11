@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for DJI Osmo Pocket
 - Add generate-config command to generate sample configs for connected disks
 - Add show-syncs command to show which disks matched up to which configs
+- Add Insta360 ONE support
 
 ### Fixed
 - Only show progress for mounted disks

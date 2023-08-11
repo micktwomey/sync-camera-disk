@@ -10,6 +10,7 @@ class SourceType(enum.StrEnum):
     dji_osmo_pocket = "dji_osmo_pocket"
     sony_a7_iv = "sony_a7_iv"
     insta360_go_2 = "insta360_go_2"
+    insta360_one = "insta360_one"
 
 
 class Source(pydantic.BaseModel):
