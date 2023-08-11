@@ -10,6 +10,10 @@ from . import macos
 class DiskMount(pydantic.BaseModel):
     path: pathlib.Path
     unique_identifier: str
+    disk_size: int | None = None
+    volume_size: int | None = None
+    volume_name: str | None = None
+    volume_file_system: str | None = None
 
 
 def mac_disks_to_disk_mounts(mac_disks: macos.DiskutilList) -> Iterable[DiskMount]:
@@ -19,6 +23,10 @@ def mac_disks_to_disk_mounts(mac_disks: macos.DiskutilList) -> Iterable[DiskMoun
                 yield DiskMount(
                     path=pathlib.Path(disk.MountPoint),
                     unique_identifier=disk.VolumeUUID.lower(),
+                    disk_size=disk_and_partitions.Size,
+                    volume_size=disk.Size,
+                    volume_name=disk.VolumeName,
+                    volume_file_system=disk.Content,
                 )
 
 

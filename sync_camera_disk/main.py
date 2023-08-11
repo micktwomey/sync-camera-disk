@@ -1,21 +1,23 @@
 import collections
 import json
 import logging
-import pathlib
+from pathlib import Path
+import sys
 from typing import Annotated
 
-import tqdm
+from tqdm import tqdm
 import typer
-from pydantic_yaml import parse_yaml_file_as
+from pydantic_yaml import parse_yaml_file_as, to_yaml_str
 import structlog
 import rich.traceback
 
-from sync_camera_disk.config import Config
+from sync_camera_disk.config import Config, Sync, SourceType, Destination, Source
 import sync_camera_disk.disks
 from sync_camera_disk import macos
 from . import source
 from .destination import DatedFolderDestination
 from .operation import perform_operation
+from .filter_disks import filter_disks_to_syncs
 
 app = typer.Typer()
 
@@ -39,34 +41,74 @@ def list_disks(
 
 
 @app.command()
+def generate_config(
+    input: Annotated[typer.FileBinaryRead, typer.Option()] | None = None
+) -> None:
+    """Generate a sample config for disks seen on the system
+
+    Tries to generate the most specific config possible to make identification
+    more reliable.
+
+    Note that you still have to fill in details such as the disk type and
+    destination paths.
+    """
+    sample_config = Config(syncs=[])
+
+    raw_input = input.read() if input is not None else None
+    for disk in sync_camera_disk.disks.list_disks(raw_input):
+        sample_config.syncs.append(
+            Sync(
+                destination=Destination(path=Path("/tmp/example")),
+                source=Source(
+                    identifier=disk.unique_identifier,
+                    type=SourceType.unknown,
+                    description=f"External disk mounted at {disk.path}",
+                    disk_size=disk.disk_size,
+                    volume_file_system=disk.volume_file_system,
+                    volume_size=disk.volume_size,
+                    volume_name=disk.volume_name,
+                    platform=sys.platform,
+                ),
+            )
+        )
+
+    print(to_yaml_str(sample_config))
+
+
+@app.command()
+def show_syncs(
+    config_path: Annotated[Path, typer.Argument(help="Path to probes.yml config")],
+) -> None:
+    config = parse_yaml_file_as(Config, config_path)
+    LOG.debug("config", config=config)
+
+    syncs = list(
+        filter_disks_to_syncs(config=config, disks=sync_camera_disk.disks.list_disks())
+    )
+    for sync, source_disk in syncs:
+        print("---")
+        print(to_yaml_str(source_disk))
+        print(to_yaml_str(sync))
+
+
+@app.command()
 def sync(
-    config_path: Annotated[
-        pathlib.Path, typer.Argument(help="Path to probes.yml config")
-    ],
+    config_path: Annotated[Path, typer.Argument(help="Path to probes.yml config")],
     dry_run: bool = True,
 ) -> None:
     config = parse_yaml_file_as(Config, config_path)
     LOG.debug("config", config=config)
 
-    # TODO: it looks like different SD cards can have the same volume uuid,
-    # might need another mechamism to differentiate, especially when files
-    # are similarly layed out. VolumeName seems to be a helpful hint, as is size
-    disks_by_identifer: dict[str, sync_camera_disk.disks.DiskMount] = {
-        d.unique_identifier: d for d in sync_camera_disk.disks.list_disks()
-    }
-
     counters: collections.Counter[str] = collections.Counter()
 
-    # Filter down to ones with mounted disks
-    syncs = [s for s in config.syncs if s.source.identifier in disks_by_identifer]
+    syncs = list(
+        filter_disks_to_syncs(config=config, disks=sync_camera_disk.disks.list_disks())
+    )
 
-    for sync in tqdm.tqdm(syncs, desc="Sync Operations"):
-        if sync.source.identifier not in disks_by_identifer:
-            continue
-        source_disk = disks_by_identifer[sync.source.identifier]
+    for sync, source_disk in tqdm(syncs, desc="Sync Operations"):
         assert sync.destination.path.is_dir()
         destination = DatedFolderDestination(prefix=sync.destination.path)
-        for file_set in tqdm.tqdm(
+        for file_set in tqdm(
             list(
                 source.enumerate_source_files(
                     source=source_disk, source_type=sync.source.type
@@ -78,10 +120,16 @@ def sync(
             for operation in destination.generate_operations(file_set=file_set):
                 counters[str(operation.operation)] += 1
                 LOG.debug("operation", operation=operation)
+                LOG.info(
+                    operation.operation,
+                    type=sync.source.type,
+                    source=operation.source,
+                    destination=operation.destination,
+                )
                 result = perform_operation(operation, dry_run=dry_run)
                 LOG.debug("operation result", result=result, success=result.success)
                 if not result.success:
-                    LOG.info(
+                    LOG.error(
                         "perform_operation error",
                         result=result,
                         success=result.success,
@@ -99,10 +147,12 @@ def sync(
 @app.callback()
 def main(
     verbose: bool = False,
+    debug: bool = False,
     use_json_logging: bool = False,
 ) -> None:
     rich.traceback.install(show_locals=True)
-    log_level = logging.DEBUG if verbose else logging.INFO
+    log_level = logging.INFO if verbose else logging.WARNING
+    log_level = logging.DEBUG if debug else log_level
     if use_json_logging:
         # Configure same processor stack as default, minus dev bits
         structlog.configure(
