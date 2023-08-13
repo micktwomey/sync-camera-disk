@@ -305,3 +305,56 @@ def test_enumerate_source_files_insta360_one(disk_mount: DiskMount) -> None:
             volume_path=disk_mount.path,
         ),
     ]
+
+
+def test_enumerate_source_files_gopro_10(disk_mount: DiskMount) -> None:
+    # /Volumes/Untitled/DCIM/100GOPRO/GX010265.MP4
+    # /Volumes/Untitled/DCIM/100GOPRO/GL010265.LRV
+    # /Volumes/Untitled/DCIM/100GOPRO/GX010265.THM
+    # /Volumes/Untitled/DCIM/100GOPRO/GX010266.MP4
+    # /Volumes/Untitled/DCIM/100GOPRO/GL010266.LRV
+    # /Volumes/Untitled/DCIM/100GOPRO/GX010266.THM
+    dcim = disk_mount.path / "DCIM" / "100GOPRO"
+    dcim.mkdir(parents=True)
+    (dcim / "GX010265.MP4").touch()
+    (dcim / "GL010265.LRV").touch()
+    (dcim / "GX010265.THM").touch()
+    (dcim / "GX010266.MP4").touch()
+    (dcim / "GL010266.LRV").touch()
+    (dcim / "GX010266.THM").touch()
+
+    file_sets = list(
+        source.enumerate_source_files(
+            source=disk_mount, source_type=SourceType.gopro_10
+        )
+    )
+
+    # Sort files for comparison
+    for fs in file_sets:
+        fs.files.sort(key=lambda x: x.path)
+    file_sets.sort(key=lambda fs: fs.stem)
+
+    assert file_sets == [
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/100GOPRO/GL010265.LRV"),
+                File(path=disk_mount.path / "DCIM/100GOPRO/GX010265.MP4"),
+                File(path=disk_mount.path / "DCIM/100GOPRO/GX010265.THM"),
+            ],
+            stem="0265",
+            prefix=Path("DCIM/100GOPRO"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/100GOPRO/GL010266.LRV"),
+                File(path=disk_mount.path / "DCIM/100GOPRO/GX010266.MP4"),
+                File(path=disk_mount.path / "DCIM/100GOPRO/GX010266.THM"),
+            ],
+            stem="0266",
+            prefix=Path("DCIM/100GOPRO"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+    ]

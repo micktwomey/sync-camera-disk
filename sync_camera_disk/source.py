@@ -141,5 +141,28 @@ def enumerate_source_files(
                     )
                 all_files_by_prefix[stem].files.append(File(path=p))
             yield from all_files_by_prefix.values()
+        case SourceType.gopro_10:
+            # https://community.gopro.com/s/article/GoPro-Camera-File-Naming-Convention?language=en_US
+            # https://community.gopro.com/s/article/What-are-thm-and-lrv-files?language=en_US
+            # /Volumes/Untitled/DCIM/100GOPRO/GX010265.MP4
+            # /Volumes/Untitled/DCIM/100GOPRO/GL010265.LRV
+            # /Volumes/Untitled/DCIM/100GOPRO/GX010265.THM
+            all_files_by_prefix = {}
+            for p in (source.path / "DCIM" / "100GOPRO").glob("G*"):
+                stem = p.stem
+                # GFXXYYYY.ext F = Format, XX = chapter/counter/loop, YYYY = file serial
+                file_number = stem[-4:]
+                if stem.startswith("._"):
+                    continue
+                if file_number not in all_files_by_prefix:
+                    all_files_by_prefix[file_number] = FileSet(
+                        files=[],
+                        stem=file_number,
+                        prefix=p.parent.relative_to(source.path),
+                        volume_path=source.path,
+                        volume_identifier=source.unique_identifier,
+                    )
+                all_files_by_prefix[file_number].files.append(File(path=p))
+            yield from all_files_by_prefix.values()
         case _:
             raise NotImplementedError(source_type)

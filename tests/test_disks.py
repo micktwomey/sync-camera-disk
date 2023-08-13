@@ -14,6 +14,8 @@ from test_macos import (
     DJI_OSMO_POCKET_SD_DISKUTIL_LIST,
     INSTA360_GO_2_PLIST_OUTPUT,
     INSTA360_GO_2_DISKUTIL_LIST,
+    GOPRO_10_PLIST_OUTPUT,
+    GOPRO_10_DISKUTIL_LIST,
 )
 
 import pytest
@@ -127,8 +129,22 @@ from sync_camera_disk import disks
                 ),
             ],
         ),
+        (
+            GOPRO_10_PLIST_OUTPUT,
+            GOPRO_10_DISKUTIL_LIST,
+            [
+                disks.DiskMount(
+                    path=Path("/Volumes/Untitled"),
+                    unique_identifier="d4f5eb21-d08d-3267-8f83-f63cde678b8f",
+                    disk_size=511868665856,
+                    volume_size=511835111424,
+                    volume_name=None,
+                    volume_file_system="Windows_NTFS",
+                ),
+            ],
+        ),
     ],
-    ids=["drobo", "dji", "dji_osmo_pocket", "sony", "insta360_go_2"],
+    ids=["drobo", "dji", "dji_osmo_pocket", "sony", "insta360_go_2", "gopro_10"],
 )
 def test_mac_disks_to_disk_mounts(
     plist: Any,
