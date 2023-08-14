@@ -420,6 +420,55 @@ INSTA360_ONE_DISKUTIL_LIST = DiskutilList(
 )
 
 
+GOPRO_10_PLIST_OUTPUT = json.load((EXAMPLES / "mac_diskutil_gopro_10.json").open())
+
+GOPRO_10_DISKUTIL_LIST = DiskutilList(
+    AllDisks=["disk2", "disk2s1", "disk2s2", "disk4", "disk4s1"],
+    AllDisksAndPartitions=[
+        DiskAndPartitions(
+            Content="GUID_partition_scheme",
+            DeviceIdentifier="disk2",
+            OSInternal=False,
+            Partitions=[
+                Partition(
+                    Content="EFI",
+                    DeviceIdentifier="disk2s1",
+                    Size=209715200,
+                    DiskUUID="0336DDD3-364A-4AFE-B474-5F63EF2B2D21",
+                    VolumeName="EFI",
+                    VolumeUUID="0E239BC6-F960-3107-89CF-1C97F78BB46B",
+                ),
+                Partition(
+                    Content="Apple_APFS",
+                    DeviceIdentifier="disk2s2",
+                    Size=2000189177856,
+                    DiskUUID="8F050760-6FEF-4491-8D7D-547C6EF0F165",
+                ),
+            ],
+            Size=2000398934016,
+        ),
+        DiskAndPartitions(
+            Content="FDisk_partition_scheme",
+            DeviceIdentifier="disk4",
+            OSInternal=False,
+            Partitions=[
+                Partition(
+                    Content="Windows_NTFS",
+                    DeviceIdentifier="disk4s1",
+                    Size=511835111424,
+                    MountPoint="/Volumes/Untitled",
+                    VolumeName=None,
+                    VolumeUUID="D4F5EB21-D08D-3267-8F83-F63CDE678B8F",
+                ),
+            ],
+            Size=511868665856,
+        ),
+    ],
+    VolumesFromDisks=[],
+    WholeDisks=["disk2", "disk4"],
+)
+
+
 @pytest.mark.parametrize(
     "plist_output,expected",
     [
@@ -429,6 +478,7 @@ INSTA360_ONE_DISKUTIL_LIST = DiskutilList(
         (SONY_SD_CARD_PLIST_OUTPUT, SONY_SD_DISKUTIL_LIST),
         (INSTA360_GO_2_PLIST_OUTPUT, INSTA360_GO_2_DISKUTIL_LIST),
         (INSTA360_ONE_PLIST_OUTPUT, INSTA360_ONE_DISKUTIL_LIST),
+        (GOPRO_10_PLIST_OUTPUT, GOPRO_10_DISKUTIL_LIST),
     ],
     ids=[
         "drobo",
@@ -437,6 +487,7 @@ INSTA360_ONE_DISKUTIL_LIST = DiskutilList(
         "sony_a7_iv",
         "insta360_go_2",
         "insta360_one",
+        "gopro_10",
     ],
 )
 def test_parse_plist_output(plist_output: Any, expected: DiskutilList) -> None:
