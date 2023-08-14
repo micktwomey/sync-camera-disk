@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add GoPro 10 support
 
+### Fixed
+- Switch to rich for progress bars
+
 ## [0.2.0] - 2023-08-11
 ### Added
 - Add tests

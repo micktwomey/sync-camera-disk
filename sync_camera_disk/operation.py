@@ -1,6 +1,6 @@
 import enum
-from pathlib import Path
 import shutil
+from pathlib import Path
 from typing import Callable
 
 from pydantic import BaseModel

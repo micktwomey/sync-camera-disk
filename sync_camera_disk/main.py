@@ -1,23 +1,24 @@
 import collections
 import json
 import logging
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Annotated
 
-from tqdm import tqdm
+import rich.traceback
+import structlog
 import typer
 from pydantic_yaml import parse_yaml_file_as, to_yaml_str
-import structlog
-import rich.traceback
+from rich.progress import Progress
 
-from sync_camera_disk.config import Config, Sync, SourceType, Destination, Source
 import sync_camera_disk.disks
 from sync_camera_disk import macos
+from sync_camera_disk.config import Config, Destination, Source, SourceType, Sync
+
 from . import source
 from .destination import DatedFolderDestination
-from .operation import perform_operation
 from .filter_disks import filter_disks_to_syncs
+from .operation import perform_operation
 
 app = typer.Typer()
 
@@ -104,43 +105,48 @@ def sync(
     syncs = list(
         filter_disks_to_syncs(config=config, disks=sync_camera_disk.disks.list_disks())
     )
-
-    for sync, source_disk in tqdm(syncs, desc="Sync Operations"):
-        assert sync.destination.path.is_dir()
-        destination = DatedFolderDestination(prefix=sync.destination.path)
-        for file_set in tqdm(
-            list(
+    with Progress() as progress:
+        syncs_task = progress.add_task("Syncs", total=len(syncs))
+        for sync, source_disk in syncs:
+            assert sync.destination.path.is_dir()
+            destination = DatedFolderDestination(prefix=sync.destination.path)
+            file_sets = list(
                 source.enumerate_source_files(
                     source=source_disk, source_type=sync.source.type
                 )
-            ),
-            desc=f"{source_disk.path} -> {sync.destination.path}",
-        ):
-            LOG.debug("file_set", file_set=file_set)
-            for operation in destination.generate_operations(file_set=file_set):
-                counters[str(operation.operation)] += 1
-                LOG.debug("operation", operation=operation)
-                LOG.info(
-                    operation.operation,
-                    type=sync.source.type,
-                    source=operation.source,
-                    destination=operation.destination,
-                )
-                result = perform_operation(operation, dry_run=dry_run)
-                LOG.debug("operation result", result=result, success=result.success)
-                if not result.success:
-                    LOG.error(
-                        "perform_operation error",
-                        result=result,
-                        success=result.success,
-                        exception=result.exception,
-                        error=result.error,
+            )
+            operations_task = progress.add_task(
+                f"{source_disk.path} -> {sync.destination.path}",
+                total=sum(len(file_set.files) for file_set in file_sets),
+            )
+            for file_set in file_sets:
+                LOG.debug("file_set", file_set=file_set)
+                for operation in destination.generate_operations(file_set=file_set):
+                    counters[str(operation.operation)] += 1
+                    LOG.debug("operation", operation=operation)
+                    LOG.info(
+                        operation.operation,
+                        type=sync.source.type,
+                        source=operation.source,
+                        destination=operation.destination,
                     )
-                    counters["failure"] += 1
-                else:
-                    counters["success"] += 1
-                if dry_run:
-                    counters["dry_run"] += 1
+                    result = perform_operation(operation, dry_run=dry_run)
+                    LOG.debug("operation result", result=result, success=result.success)
+                    if not result.success:
+                        LOG.error(
+                            "perform_operation error",
+                            result=result,
+                            success=result.success,
+                            exception=result.exception,
+                            error=result.error,
+                        )
+                        counters["failure"] += 1
+                    else:
+                        counters["success"] += 1
+                    if dry_run:
+                        counters["dry_run"] += 1
+                    progress.update(operations_task, advance=1)
+            progress.update(syncs_task, advance=1)
     LOG.info("counters", **counters)
 
 

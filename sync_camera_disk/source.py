@@ -2,10 +2,9 @@ from typing import Iterable
 
 import structlog
 
-from .disks import DiskMount
-from .file import FileSet, File
-
 from .config import SourceType
+from .disks import DiskMount
+from .file import File, FileSet
 
 LOG: structlog.stdlib.BoundLogger = structlog.get_logger()
 

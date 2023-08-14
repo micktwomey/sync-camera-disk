@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from sync_camera_disk.config import Config, Sync, Destination, Source, SourceType
-from sync_camera_disk.disks import DiskMount
 from sync_camera_disk import filter_disks
+from sync_camera_disk.config import Config, Destination, Source, SourceType, Sync
+from sync_camera_disk.disks import DiskMount
 
 
 def test_filter_disks_to_syncs() -> None:

@@ -1,27 +1,25 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
+import pytest
 from test_macos import (
-    DROBO_PLIST_OUTPUT,
-    DROBO_DISKUTIL_LIST,
-    SONY_SD_CARD_PLIST_OUTPUT,
-    SONY_SD_DISKUTIL_LIST,
-    DJI_SD_CARD_PLIST_OUTPUT,
-    DJI_SD_DISKUTIL_LIST,
     DJI_OSMO_POCKET_SD_CARD_PLIST_OUTPUT,
     DJI_OSMO_POCKET_SD_DISKUTIL_LIST,
-    INSTA360_GO_2_PLIST_OUTPUT,
-    INSTA360_GO_2_DISKUTIL_LIST,
-    GOPRO_10_PLIST_OUTPUT,
+    DJI_SD_CARD_PLIST_OUTPUT,
+    DJI_SD_DISKUTIL_LIST,
+    DROBO_DISKUTIL_LIST,
+    DROBO_PLIST_OUTPUT,
     GOPRO_10_DISKUTIL_LIST,
+    GOPRO_10_PLIST_OUTPUT,
+    INSTA360_GO_2_DISKUTIL_LIST,
+    INSTA360_GO_2_PLIST_OUTPUT,
+    SONY_SD_CARD_PLIST_OUTPUT,
+    SONY_SD_DISKUTIL_LIST,
 )
 
-import pytest
-
-from sync_camera_disk import macos
-from sync_camera_disk import disks
+from sync_camera_disk import disks, macos
 
 
 @pytest.mark.parametrize(
