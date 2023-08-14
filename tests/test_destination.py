@@ -2,9 +2,8 @@ import datetime
 import shutil
 from pathlib import Path
 
-
-from sync_camera_disk.file import File, FileSet
 from sync_camera_disk import destination
+from sync_camera_disk.file import File, FileSet
 from sync_camera_disk.operation import Operation, OperationType
 
 
