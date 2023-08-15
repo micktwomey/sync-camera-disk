@@ -163,5 +163,23 @@ def enumerate_source_files(
                     )
                 all_files_by_prefix[file_number].files.append(File(path=p))
             yield from all_files_by_prefix.values()
+        case SourceType.fujifilm_x100:
+            # /Volumes/Untitled//DCIM/100_FUJI/DSCF0384.JPG
+            # /Volumes/Untitled//DCIM/100_FUJI/DSCF0384.RAF
+            all_files_by_prefix = {}
+            for p in (source.path / "DCIM" / "100_FUJI").glob("*"):
+                stem = p.stem
+                if stem.startswith("._"):
+                    continue
+                if stem not in all_files_by_prefix:
+                    all_files_by_prefix[stem] = FileSet(
+                        files=[],
+                        stem=stem,
+                        prefix=p.parent.relative_to(source.path),
+                        volume_path=source.path,
+                        volume_identifier=source.unique_identifier,
+                    )
+                all_files_by_prefix[stem].files.append(File(path=p))
+            yield from all_files_by_prefix.values()
         case _:
             raise NotImplementedError(source_type)

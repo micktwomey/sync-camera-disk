@@ -28,6 +28,15 @@ def mac_disks_to_disk_mounts(mac_disks: macos.DiskutilList) -> Iterable[DiskMoun
                     volume_name=disk.VolumeName,
                     volume_file_system=disk.Content,
                 )
+            elif disk.MountPoint is not None and disk.VolumeUUID is None:
+                yield DiskMount(
+                    path=pathlib.Path(disk.MountPoint),
+                    unique_identifier=f"{disk.Content}-{disk_and_partitions.Size}-{disk.Size}",
+                    disk_size=disk_and_partitions.Size,
+                    volume_size=disk.Size,
+                    volume_name=disk.VolumeName,
+                    volume_file_system=disk.Content,
+                )
 
 
 def list_disks(input: bytes | None = None) -> Iterable[DiskMount]:

@@ -11,6 +11,8 @@ from test_macos import (
     DJI_SD_DISKUTIL_LIST,
     DROBO_DISKUTIL_LIST,
     DROBO_PLIST_OUTPUT,
+    FUJIFILM_X100_DISKUTIL_LIST,
+    FUJIFILM_X100_PLIST_OUTPUT,
     GOPRO_10_DISKUTIL_LIST,
     GOPRO_10_PLIST_OUTPUT,
     INSTA360_GO_2_DISKUTIL_LIST,
@@ -141,8 +143,30 @@ from sync_camera_disk import disks, macos
                 ),
             ],
         ),
+        (
+            FUJIFILM_X100_PLIST_OUTPUT,
+            FUJIFILM_X100_DISKUTIL_LIST,
+            [
+                disks.DiskMount(
+                    path=Path("/Volumes/Untitled"),
+                    unique_identifier="Windows_FAT_32-15931539456-15927345152",
+                    disk_size=15931539456,
+                    volume_size=15927345152,
+                    volume_name=None,
+                    volume_file_system="Windows_FAT_32",
+                ),
+            ],
+        ),
     ],
-    ids=["drobo", "dji", "dji_osmo_pocket", "sony", "insta360_go_2", "gopro_10"],
+    ids=[
+        "drobo",
+        "dji",
+        "dji_osmo_pocket",
+        "sony",
+        "insta360_go_2",
+        "gopro_10",
+        "fujifilm_x100",
+    ],
 )
 def test_mac_disks_to_disk_mounts(
     plist: Any,

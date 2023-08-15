@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add GoPro 10 support
+- Add Fujifilm X100 support
 
 ### Fixed
 - Switch to rich for progress bars

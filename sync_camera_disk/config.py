@@ -12,6 +12,7 @@ class SourceType(enum.StrEnum):
     insta360_go_2 = "insta360_go_2"
     insta360_one = "insta360_one"
     gopro_10 = "gopro_10"
+    fujifilm_x100 = "fujifilm_x100"
 
 
 class Source(pydantic.BaseModel):

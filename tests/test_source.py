@@ -358,3 +358,48 @@ def test_enumerate_source_files_gopro_10(disk_mount: DiskMount) -> None:
             volume_path=disk_mount.path,
         ),
     ]
+
+
+def test_enumerate_source_files_fujifilm_x100(disk_mount: DiskMount) -> None:
+    # /Volumes/Untitled//DCIM/100_FUJI/DSCF0384.JPG
+    # /Volumes/Untitled//DCIM/100_FUJI/DSCF0384.RAF
+    dcim = disk_mount.path / "DCIM" / "100_FUJI"
+    dcim.mkdir(parents=True)
+    (dcim / "DSCF0384.JPG").touch()
+    (dcim / "DSCF0384.RAF").touch()
+    (dcim / "DSCF0385.JPG").touch()
+    (dcim / "DSCF0385.RAF").touch()
+
+    file_sets = list(
+        source.enumerate_source_files(
+            source=disk_mount, source_type=SourceType.fujifilm_x100
+        )
+    )
+
+    # Sort files for comparison
+    for fs in file_sets:
+        fs.files.sort(key=lambda x: x.path)
+    file_sets.sort(key=lambda fs: fs.stem)
+
+    assert file_sets == [
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/100_FUJI/DSCF0384.JPG"),
+                File(path=disk_mount.path / "DCIM/100_FUJI/DSCF0384.RAF"),
+            ],
+            stem="DSCF0384",
+            prefix=Path("DCIM/100_FUJI"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/100_FUJI/DSCF0385.JPG"),
+                File(path=disk_mount.path / "DCIM/100_FUJI/DSCF0385.RAF"),
+            ],
+            stem="DSCF0385",
+            prefix=Path("DCIM/100_FUJI"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+    ]

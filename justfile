@@ -1,6 +1,6 @@
 project := "sync_camera_disk"
 
-default: pre-commit lint test
+default: pre-commit lint coverage
 
 test: pytest
 
@@ -9,7 +9,7 @@ pytest *ARGS="-vv":
     poetry run pytest {{ARGS}}
 
 # Run pytest with coverage
-coverage *ARGS="-vv --cov=sync_camera_disk --cov-report=html --cov-branch --cov-context=test":
+coverage *ARGS="-vv --cov=sync_camera_disk --cov-report=html --cov-report=term --cov-branch --cov-context=test":
     poetry run pytest {{ARGS}}
 
 # Run all linting actions
