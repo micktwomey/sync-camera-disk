@@ -1,0 +1,52 @@
+{
+  "AllDisks": [
+    "disk2",
+    "disk2s1",
+    "disk2s2",
+    "disk10",
+    "disk10s1"
+  ],
+  "AllDisksAndPartitions": [
+    {
+      "Content": "GUID_partition_scheme",
+      "DeviceIdentifier": "disk2",
+      "OSInternal": false,
+      "Partitions": [
+        {
+          "Content": "EFI",
+          "DeviceIdentifier": "disk2s1",
+          "DiskUUID": "0336DDD3-364A-4AFE-B474-5F63EF2B2D21",
+          "Size": 209715200,
+          "VolumeName": "EFI",
+          "VolumeUUID": "0E239BC6-F960-3107-89CF-1C97F78BB46B"
+        },
+        {
+          "Content": "Apple_APFS",
+          "DeviceIdentifier": "disk2s2",
+          "DiskUUID": "8F050760-6FEF-4491-8D7D-547C6EF0F165",
+          "Size": 2000189177856
+        }
+      ],
+      "Size": 2000398934016
+    },
+    {
+      "Content": "FDisk_partition_scheme",
+      "DeviceIdentifier": "disk10",
+      "OSInternal": false,
+      "Partitions": [
+        {
+          "Content": "Windows_FAT_32",
+          "DeviceIdentifier": "disk10s1",
+          "MountPoint": "/Volumes/Untitled",
+          "Size": 15927345152
+        }
+      ],
+      "Size": 15931539456
+    }
+  ],
+  "VolumesFromDisks": [],
+  "WholeDisks": [
+    "disk2",
+    "disk10"
+  ]
+}

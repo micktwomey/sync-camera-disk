@@ -468,6 +468,56 @@ GOPRO_10_DISKUTIL_LIST = DiskutilList(
     WholeDisks=["disk2", "disk4"],
 )
 
+FUJIFILM_X100_PLIST_OUTPUT = json.load(
+    (EXAMPLES / "mac_diskutil_fujifilm_x100.json").open()
+)
+
+FUJIFILM_X100_DISKUTIL_LIST = DiskutilList(
+    AllDisks=["disk2", "disk2s1", "disk2s2", "disk10", "disk10s1"],
+    AllDisksAndPartitions=[
+        DiskAndPartitions(
+            Content="GUID_partition_scheme",
+            DeviceIdentifier="disk2",
+            OSInternal=False,
+            Partitions=[
+                Partition(
+                    Content="EFI",
+                    DeviceIdentifier="disk2s1",
+                    Size=209715200,
+                    DiskUUID="0336DDD3-364A-4AFE-B474-5F63EF2B2D21",
+                    VolumeName="EFI",
+                    VolumeUUID="0E239BC6-F960-3107-89CF-1C97F78BB46B",
+                ),
+                Partition(
+                    Content="Apple_APFS",
+                    DeviceIdentifier="disk2s2",
+                    Size=2000189177856,
+                    DiskUUID="8F050760-6FEF-4491-8D7D-547C6EF0F165",
+                ),
+            ],
+            Size=2000398934016,
+        ),
+        DiskAndPartitions(
+            Content="FDisk_partition_scheme",
+            DeviceIdentifier="disk10",
+            OSInternal=False,
+            Partitions=[
+                Partition(
+                    Content="Windows_FAT_32",
+                    DeviceIdentifier="disk10s1",
+                    Size=15927345152,
+                    MountPoint="/Volumes/Untitled",
+                    VolumeName=None,
+                    VolumeUUID=None,
+                ),
+            ],
+            Size=15931539456,
+        ),
+    ],
+    VolumesFromDisks=[],
+    WholeDisks=["disk2", "disk10"],
+)
+
 
 @pytest.mark.parametrize(
     "plist_output,expected",
@@ -479,6 +529,7 @@ GOPRO_10_DISKUTIL_LIST = DiskutilList(
         (INSTA360_GO_2_PLIST_OUTPUT, INSTA360_GO_2_DISKUTIL_LIST),
         (INSTA360_ONE_PLIST_OUTPUT, INSTA360_ONE_DISKUTIL_LIST),
         (GOPRO_10_PLIST_OUTPUT, GOPRO_10_DISKUTIL_LIST),
+        (FUJIFILM_X100_PLIST_OUTPUT, FUJIFILM_X100_DISKUTIL_LIST),
     ],
     ids=[
         "drobo",
@@ -488,6 +539,7 @@ GOPRO_10_DISKUTIL_LIST = DiskutilList(
         "insta360_go_2",
         "insta360_one",
         "gopro_10",
+        "fujifilm_x100",
     ],
 )
 def test_parse_plist_output(plist_output: Any, expected: DiskutilList) -> None:
