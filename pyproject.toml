@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sync-camera-disk"
-version = "0.3.0"
+version = "0.4.0"
 description = "Sync files from camera SDs to different media"
 authors = ["Michael Twomey <mick@twomeylee.name>"]
 license = "MIT"
