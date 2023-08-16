@@ -5,9 +5,11 @@ import sys
 from pathlib import Path
 from typing import Annotated
 
+import rich
 import rich.traceback
 import structlog
 import typer
+import xdg_base_dirs
 from pydantic_yaml import parse_yaml_file_as, to_yaml_str
 from rich.progress import Progress
 
@@ -24,11 +26,17 @@ app = typer.Typer()
 
 LOG: structlog.stdlib.BoundLogger = structlog.get_logger()
 
+# Note that this will lookup the config path so will vary from run to run
+# depending on env vars.
+DEFAULT_CONFIG_PATH = (
+    xdg_base_dirs.xdg_config_home() / "sync-camera-disk" / "config.yaml"
+)
+
 
 @app.command()
 def diskutil_list_physical_external_disks() -> None:
     """Run diskutil to list disks and print parsed plist. MacOS only."""
-    print(json.dumps(macos.diskutil_list_physical_external_disks()))
+    rich.print_json(json.dumps(macos.diskutil_list_physical_external_disks()))
 
 
 @app.command()
@@ -38,12 +46,16 @@ def list_disks(
     """List all physical external disks"""
     raw_input = input.read() if input is not None else None
     for disk in sync_camera_disk.disks.list_disks(raw_input):
-        print(disk.json())
+        rich.print_json(disk.json())
 
 
 @app.command()
 def generate_config(
-    input: Annotated[typer.FileBinaryRead, typer.Option()] | None = None
+    input: Annotated[typer.FileBinaryRead, typer.Option()] | None = None,
+    config_path: Annotated[
+        Path, typer.Argument(help="Path to probes.yml config")
+    ] = DEFAULT_CONFIG_PATH,
+    overwrite: bool = False,
 ) -> None:
     """Generate a sample config for disks seen on the system
 
@@ -72,14 +84,28 @@ def generate_config(
                 ),
             )
         )
+    config = to_yaml_str(sample_config)
+    rich.print(config)
 
-    print(to_yaml_str(sample_config))
+    if overwrite and config_path.is_file():
+        LOG.info(f"Overwriting {config_path}")
+    elif config_path.is_file():
+        LOG.info(f"Not overwriting existing {config_path}")
+
+    if (not config_path.is_file()) or overwrite:
+        LOG.info(f"Writing to {config_path}")
+        config_path.parent.mkdir(exist_ok=True, parents=True)
+        with config_path.open("w") as fp:
+            fp.write(config)
 
 
 @app.command()
 def show_syncs(
-    config_path: Annotated[Path, typer.Argument(help="Path to probes.yml config")],
+    config_path: Annotated[
+        Path, typer.Argument(help="Path to probes.yml config")
+    ] = DEFAULT_CONFIG_PATH,
 ) -> None:
+    """Show which sync configurations will be used for detected disks"""
     config = parse_yaml_file_as(Config, config_path)
     LOG.debug("config", config=config)
 
@@ -87,16 +113,17 @@ def show_syncs(
         filter_disks_to_syncs(config=config, disks=sync_camera_disk.disks.list_disks())
     )
     for sync, source_disk in syncs:
-        print("---")
-        print(to_yaml_str(source_disk))
-        print(to_yaml_str(sync))
+        rich.print("\n".join(("---", to_yaml_str(source_disk), to_yaml_str(sync))))
 
 
 @app.command()
 def sync(
-    config_path: Annotated[Path, typer.Argument(help="Path to probes.yml config")],
+    config_path: Annotated[
+        Path, typer.Argument(help="Path to probes.yml config")
+    ] = DEFAULT_CONFIG_PATH,
     dry_run: bool = True,
 ) -> None:
+    """Sync files from disks to configured destinations"""
     config = parse_yaml_file_as(Config, config_path)
     LOG.debug("config", config=config)
 
@@ -152,13 +179,15 @@ def sync(
 
 @app.callback()
 def main(
-    verbose: bool = False,
+    verbose: bool = True,
     debug: bool = False,
+    quiet: bool = False,
     use_json_logging: bool = False,
 ) -> None:
     rich.traceback.install(show_locals=True)
     log_level = logging.INFO if verbose else logging.WARNING
     log_level = logging.DEBUG if debug else log_level
+    log_level = logging.WARNING if quiet else log_level
     if use_json_logging:
         # Configure same processor stack as default, minus dev bits
         structlog.configure(
