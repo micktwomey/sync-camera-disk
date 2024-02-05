@@ -181,5 +181,26 @@ def enumerate_source_files(
                     )
                 all_files_by_prefix[stem].files.append(File(path=p))
             yield from all_files_by_prefix.values()
+        case SourceType.atomos:
+            # /Volumes/SHOGUNU/SHOGUNU_S001_S001_T001.MOV
+            all_files_by_prefix = {}
+            for p in (source.path).glob("*"):
+                stem = p.stem
+                if stem.startswith("."):
+                    continue
+                if stem.startswith("Frame Grab"):
+                    continue
+                if stem.startswith(".FF"):
+                    continue
+                if stem not in all_files_by_prefix:
+                    all_files_by_prefix[stem] = FileSet(
+                        files=[],
+                        stem=stem,
+                        prefix=p.parent.relative_to(source.path),
+                        volume_path=source.path,
+                        volume_identifier=source.unique_identifier,
+                    )
+                all_files_by_prefix[stem].files.append(File(path=p))
+            yield from all_files_by_prefix.values()
         case _:
             raise NotImplementedError(source_type)

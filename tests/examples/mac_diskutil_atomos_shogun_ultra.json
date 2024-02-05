@@ -1,0 +1,56 @@
+{
+  "AllDisks": [
+    "disk2",
+    "disk2s1",
+    "disk2s2",
+    "disk4",
+    "disk4s1"
+  ],
+  "AllDisksAndPartitions": [
+    {
+      "Content": "GUID_partition_scheme",
+      "DeviceIdentifier": "disk2",
+      "OSInternal": false,
+      "Partitions": [
+        {
+          "Content": "EFI",
+          "DeviceIdentifier": "disk2s1",
+          "DiskUUID": "0336DDD3-364A-4AFE-B474-5F63EF2B2D21",
+          "Size": 209715200,
+          "VolumeName": "EFI",
+          "VolumeUUID": "0E239BC6-F960-3107-89CF-1C97F78BB46B"
+        },
+        {
+          "Content": "Apple_APFS",
+          "DeviceIdentifier": "disk2s2",
+          "DiskUUID": "8F050760-6FEF-4491-8D7D-547C6EF0F165",
+          "Size": 2000189177856
+        }
+      ],
+      "Size": 2000398934016
+    },
+    {
+      "Content": "FDisk_partition_scheme",
+      "DeviceIdentifier": "disk4",
+      "OSInternal": false,
+      "Partitions": [
+        {
+          "Content": "Windows_NTFS",
+          "DeviceIdentifier": "disk4s1",
+          "MountPoint": "/Volumes/SHOGUNU",
+          "Size": 1000203836928,
+          "VolumeName": "SHOGUNU",
+          "VolumeUUID": "632B85B0-150D-37EB-8737-A65261E821F4"
+        }
+      ],
+      "Size": 1000204886016
+    }
+  ],
+  "VolumesFromDisks": [
+    "SHOGUNU"
+  ],
+  "WholeDisks": [
+    "disk2",
+    "disk4"
+  ]
+}

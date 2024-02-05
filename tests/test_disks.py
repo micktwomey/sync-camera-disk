@@ -5,6 +5,8 @@ from unittest.mock import patch
 
 import pytest
 from test_macos import (
+    ATOMOS_SHOGUN_ULTRA_DISKUTIL_LIST,
+    ATOMOS_SHOGUN_ULTRA_PLIST_OUTPUT,
     DJI_OSMO_POCKET_SD_CARD_PLIST_OUTPUT,
     DJI_OSMO_POCKET_SD_DISKUTIL_LIST,
     DJI_SD_CARD_PLIST_OUTPUT,
@@ -157,6 +159,20 @@ from sync_camera_disk import disks, macos
                 ),
             ],
         ),
+        (
+            ATOMOS_SHOGUN_ULTRA_PLIST_OUTPUT,
+            ATOMOS_SHOGUN_ULTRA_DISKUTIL_LIST,
+            [
+                disks.DiskMount(
+                    path=Path("/Volumes/SHOGUNU"),
+                    unique_identifier="632b85b0-150d-37eb-8737-a65261e821f4",
+                    disk_size=1000204886016,
+                    volume_size=1000203836928,
+                    volume_name="SHOGUNU",
+                    volume_file_system="Windows_NTFS",
+                ),
+            ],
+        ),
     ],
     ids=[
         "drobo",
@@ -166,6 +182,7 @@ from sync_camera_disk import disks, macos
         "insta360_go_2",
         "gopro_10",
         "fujifilm_x100",
+        "atomos",
     ],
 )
 def test_mac_disks_to_disk_mounts(

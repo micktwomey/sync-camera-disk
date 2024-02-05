@@ -403,3 +403,43 @@ def test_enumerate_source_files_fujifilm_x100(disk_mount: DiskMount) -> None:
             volume_path=disk_mount.path,
         ),
     ]
+
+
+def test_enumerate_source_files_atomos_shogun_ultra(disk_mount: DiskMount) -> None:
+    # /Volumes/SHOGUNU/SHOGUNU_S001_S001_T001.MOV
+    # TODO: other extensions and split files
+    ssd = disk_mount.path
+    (ssd / "SHOGUNU_S001_S001_T001.MOV").touch()
+    (ssd / "SHOGUNU_S001_S001_T002.MOV").touch()
+    (ssd / "Frame Grab").mkdir()
+    (ssd / "Frame Grab/SHOGUNU_S001_S001_T001.PNG").touch()
+
+    file_sets = list(
+        source.enumerate_source_files(source=disk_mount, source_type=SourceType.atomos)
+    )
+
+    # Sort files for comparison
+    for fs in file_sets:
+        fs.files.sort(key=lambda x: x.path)
+    file_sets.sort(key=lambda fs: fs.stem)
+
+    assert file_sets == [
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "SHOGUNU_S001_S001_T001.MOV"),
+            ],
+            stem="SHOGUNU_S001_S001_T001",
+            prefix=Path(""),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "SHOGUNU_S001_S001_T002.MOV"),
+            ],
+            stem="SHOGUNU_S001_S001_T002",
+            prefix=Path(""),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+    ]
