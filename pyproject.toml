@@ -19,7 +19,6 @@ xdg-base-dirs = "^6.0.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "*"
-black = "*"
 mypy = "*"
 pytest = "*"
 pytest-cov = "*"

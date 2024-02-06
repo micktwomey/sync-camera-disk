@@ -13,7 +13,7 @@ coverage *ARGS="-vv --cov=sync_camera_disk --cov-report=html --cov-report=term -
     poetry run pytest {{ARGS}}
 
 # Run all linting actions
-lint: ruff mypy black
+lint: ruff mypy format
 
 # Lint code with ruff
 ruff COMMAND="check" *ARGS=".":
@@ -23,9 +23,9 @@ ruff COMMAND="check" *ARGS=".":
 mypy *ARGS=".":
     poetry run mypy {{ARGS}}
 
-# Check files with black
-black *ARGS=".":
-    poetry run black {{ARGS}}
+# Format code with ruff
+format *ARGS=".":
+    poetry run ruff format {{ARGS}}
 
 # Run pre-commit
 pre-commit COMMAND="run" *ARGS="--all-files":

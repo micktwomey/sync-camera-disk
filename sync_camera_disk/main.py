@@ -41,7 +41,7 @@ def diskutil_list_physical_external_disks() -> None:
 
 @app.command()
 def list_disks(
-    input: Annotated[typer.FileBinaryRead, typer.Option()] | None = None
+    input: Annotated[typer.FileBinaryRead, typer.Option()] | None = None,
 ) -> None:
     """List all physical external disks"""
     raw_input = input.read() if input is not None else None

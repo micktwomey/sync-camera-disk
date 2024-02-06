@@ -45,5 +45,5 @@ jobs:
           poetry install
       - name: Install just
         uses: extractions/setup-just@v1
-      - name: just test
+      - name: just lint
         run: just lint
