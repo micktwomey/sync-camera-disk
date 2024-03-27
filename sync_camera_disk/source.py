@@ -48,21 +48,25 @@ def enumerate_source_files(
 
             # /Volumes/Untitled/M4ROOT/CLIP/C0109M01.XML
             # /Volumes/Untitled/M4ROOT/CLIP/C0109.MP4
+            # /Volumes/Untitled/private/M4ROOT/CLIP/C0109M01.XML
+            # /Volumes/Untitled/private/M4ROOT/CLIP/C0109.MP4
             all_files_by_prefix = {}
-            for p in (source.path / "M4ROOT" / "CLIP").glob("C*"):
-                if p.suffix.lower() == ".xml" and p.stem.lower().endswith("m01"):
-                    stem = p.stem[:-3]  # drop M01 portion
-                else:
-                    stem = p.stem
-                if stem not in all_files_by_prefix:
-                    all_files_by_prefix[stem] = FileSet(
-                        files=[],
-                        stem=stem,
-                        prefix=p.parent.relative_to(source.path),
-                        volume_path=source.path,
-                        volume_identifier=source.unique_identifier,
-                    )
-                all_files_by_prefix[stem].files.append(File(path=p))
+            for m4prefix in (source.path, (source.path / "private")):
+                for p in (m4prefix / "M4ROOT" / "CLIP").glob("C*"):
+                    if p.suffix.lower() == ".xml" and p.stem.lower().endswith("m01"):
+                        stem = p.stem[:-3]  # drop M01 portion
+                    else:
+                        stem = p.stem
+                    if stem not in all_files_by_prefix:
+                        all_files_by_prefix[stem] = FileSet(
+                            files=[],
+                            stem=stem,
+                            prefix=p.parent.relative_to(source.path),
+                            volume_path=source.path,
+                            volume_identifier=source.unique_identifier,
+                        )
+                    all_files_by_prefix[stem].files.append(File(path=p))
+
             yield from all_files_by_prefix.values()
         case SourceType.insta360_go_2:
             # /Volumes/Insta360GO2/DCIM/Camera01/VID_20210320_172249_00_001.mp4

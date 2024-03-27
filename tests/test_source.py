@@ -221,6 +221,10 @@ def test_enumerate_source_files_sony_a7_iv(disk_mount: DiskMount) -> None:
     m4root.mkdir(parents=True)
     (m4root / "C0109M01.XML").touch()
     (m4root / "C0109.MP4").touch()
+    m4root_private = disk_mount.path / "private" / "M4ROOT" / "CLIP"
+    m4root_private.mkdir(parents=True)
+    (m4root_private / "C0110M01.XML").touch()
+    (m4root_private / "C0110.MP4").touch()
 
     file_sets = list(
         source.enumerate_source_files(
@@ -251,6 +255,16 @@ def test_enumerate_source_files_sony_a7_iv(disk_mount: DiskMount) -> None:
             ],
             stem="C0109",
             prefix=Path("M4ROOT/CLIP"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "private/M4ROOT/CLIP/C0110.MP4"),
+                File(path=disk_mount.path / "private/M4ROOT/CLIP/C0110M01.XML"),
+            ],
+            stem="C0110",
+            prefix=Path("private/M4ROOT/CLIP"),
             volume_identifier="abc",
             volume_path=disk_mount.path,
         ),

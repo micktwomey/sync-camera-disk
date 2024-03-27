@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Switch from black to ruff for formatting
 
+### Added
+- Support private/M4root sub-folders in Sony cameras
+
 ## [0.5.0] - 2024-02-05
 ### Added
 - Add Atomos support
