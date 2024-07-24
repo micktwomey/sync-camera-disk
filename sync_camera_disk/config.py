@@ -16,15 +16,28 @@ class SourceType(enum.StrEnum):
     atomos = "atomos"
 
 
+class MatchType(enum.StrEnum):
+    identifier = "identifier"
+    disk_size = "disk_size"
+    volume_size = "volume_size"
+    volume_file_system = "volume_file_system"
+
+
 class Source(pydantic.BaseModel):
-    identifier: str
     type: SourceType
+    identifier: str | None
     description: str | None = None
     disk_size: int | None = None
     volume_size: int | None = None
     volume_name: str | None = None
     volume_file_system: str | None = None
     platform: str | None = None
+    match_on: list[MatchType] = [
+        MatchType.identifier,
+        MatchType.disk_size,
+        MatchType.volume_size,
+        MatchType.volume_file_system,
+    ]
 
 
 class Destination(pydantic.BaseModel):
