@@ -20,7 +20,7 @@ class DiskAndPartitions(pydantic.BaseModel):
     Content: str
     DeviceIdentifier: str
     OSInternal: bool
-    Partitions: list[Partition]
+    Partitions: list[Partition] = pydantic.Field(default_factory=list)
     Size: int
 
 

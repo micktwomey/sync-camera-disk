@@ -37,5 +37,5 @@ sync-camera-disk = 'sync_camera_disk.main:app'
 strict = true
 plugins = "pydantic.mypy"
 
-[tool.ruff]
+[tool.ruff.lint]
 extend-select = ["I"]

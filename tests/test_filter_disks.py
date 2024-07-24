@@ -22,10 +22,10 @@ def test_filter_disks_to_syncs() -> None:
         source=Source(
             identifier="unique",
             type=SourceType.sony_a7_iv,
-            disk_size=1234,
+            disk_size=5432,
             volume_file_system="NTFS",
             volume_name=None,
-            volume_size=1230,
+            volume_size=5430,
         ),
     )
     example_no_disk_sync = Sync(

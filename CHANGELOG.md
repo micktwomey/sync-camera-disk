@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Support private/M4root sub-folders in Sony cameras
+- Use a match_on config setting to determine which properties to match on. Defaults to uuid, disk size, volume size and volume type.
 
 ## [0.5.0] - 2024-02-05
 ### Added
