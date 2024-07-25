@@ -5,6 +5,8 @@ description = "Sync files from camera SDs to different media"
 authors = ["Michael Twomey <mick@twomeylee.name>"]
 license = "MIT"
 readme = "README.md"
+homepage = "https://github.com/micktwomey/sync-camera-disk/"
+repository = "https://github.com/micktwomey/sync-camera-disk/"
 packages = [{ include = "sync_camera_disk" }]
 
 [tool.poetry.dependencies]
