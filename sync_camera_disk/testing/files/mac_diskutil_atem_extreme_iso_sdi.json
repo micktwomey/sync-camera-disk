@@ -1,0 +1,40 @@
+{
+  "AllDisks": [
+    "disk6",
+    "disk6s1",
+    "disk6s2"
+  ],
+  "AllDisksAndPartitions": [
+    {
+      "Content": "GUID_partition_scheme",
+      "DeviceIdentifier": "disk6",
+      "OSInternal": false,
+      "Partitions": [
+        {
+          "Content": "EFI",
+          "DeviceIdentifier": "disk6s1",
+          "DiskUUID": "AEF07515-0D6A-4119-8BC9-108EA8A942B1",
+          "Size": 209715200,
+          "VolumeName": "EFI",
+          "VolumeUUID": "0E239BC6-F960-3107-89CF-1C97F78BB46B"
+        },
+        {
+          "Content": "Microsoft Basic Data",
+          "DeviceIdentifier": "disk6s2",
+          "DiskUUID": "A582670F-4922-45D8-8293-D34CCF205A28",
+          "MountPoint": "/Volumes/ATEM",
+          "Size": 2000188080128,
+          "VolumeName": "ATEM",
+          "VolumeUUID": "74A2DB1F-6A64-3592-AF16-7A9585F348AE"
+        }
+      ],
+      "Size": 2000398934016
+    }
+  ],
+  "VolumesFromDisks": [
+    "ATEM"
+  ],
+  "WholeDisks": [
+    "disk6"
+  ]
+}
