@@ -1,3 +1,4 @@
+import itertools
 from typing import Iterable
 
 import structlog
@@ -205,6 +206,41 @@ def enumerate_source_files(
                         volume_identifier=source.unique_identifier,
                     )
                 all_files_by_prefix[stem].files.append(File(path=p))
+            yield from all_files_by_prefix.values()
+        case SourceType.atem_iso:
+            # /Volumes/ATEM/PyLadies/Video ISO Files/PyLadies CAM 1 01.mp4
+            # /Volumes/ATEM/PyLadies/Video ISO Files/._PyLadies CAM 1 01.mp4
+            # /Volumes/ATEM/PyLadies/Audio Source Files/PyLadies CAM 1 01.wav
+            # /Volumes/ATEM/PyLadies/Audio Source Files/._PyLadies CAM 1 01.wav
+            # /Volumes/ATEM/PyLadies/PyLadies 01.mp4
+            # /Volumes/ATEM/PyLadies/._PyLadies 01.mp4
+            # /Volumes/ATEM/PyLadies/PyLadies.drp
+            # /Volumes/ATEM/PyLadies/._PyLadies.drp
+            # /Volumes/ATEM/._.
+            all_files_by_prefix = {}
+            for p in (source.path).glob("*/*.drp"):
+                if p.name.startswith("._"):
+                    continue
+                stem = p.parent.stem
+                if stem not in all_files_by_prefix:
+                    all_files_by_prefix[stem] = FileSet(
+                        files=[],
+                        stem=stem,
+                        prefix=p.parent.relative_to(source.path),
+                        volume_path=source.path,
+                        volume_identifier=source.unique_identifier,
+                    )
+                    for child in itertools.chain(
+                        p.parent.glob("*.mp4"),
+                        p.parent.glob("*.drp"),
+                        p.parent.glob("Video ISO Files/*.mp4"),
+                        p.parent.glob("Video ISO Files/Media Files/*"),
+                        p.parent.glob("Audio Source Files/*.wav"),
+                    ):
+                        if child.name.startswith("._"):
+                            continue
+                        print((stem, child))
+                        all_files_by_prefix[stem].files.append(File(path=child))
             yield from all_files_by_prefix.values()
         case _:
             raise NotImplementedError(source_type)

@@ -4,7 +4,11 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
-from test_macos import (
+
+from sync_camera_disk import disks, macos
+from sync_camera_disk.testing.examples import (
+    ATEM_EXTREME_ISO_SDI_DISKUTIL_LIST,
+    ATEM_EXTREME_ISO_SDI_PLIST_OUTPUT,
     ATOMOS_SHOGUN_ULTRA_DISKUTIL_LIST,
     ATOMOS_SHOGUN_ULTRA_PLIST_OUTPUT,
     DJI_OSMO_POCKET_SD_CARD_PLIST_OUTPUT,
@@ -22,8 +26,6 @@ from test_macos import (
     SONY_SD_CARD_PLIST_OUTPUT,
     SONY_SD_DISKUTIL_LIST,
 )
-
-from sync_camera_disk import disks, macos
 
 
 @pytest.mark.parametrize(
@@ -173,6 +175,20 @@ from sync_camera_disk import disks, macos
                 ),
             ],
         ),
+        (
+            ATEM_EXTREME_ISO_SDI_PLIST_OUTPUT,
+            ATEM_EXTREME_ISO_SDI_DISKUTIL_LIST,
+            [
+                disks.DiskMount(
+                    path=Path("/Volumes/ATEM"),
+                    unique_identifier="74a2db1f-6a64-3592-af16-7a9585f348ae",
+                    disk_size=2000398934016,
+                    volume_size=2000188080128,
+                    volume_name="ATEM",
+                    volume_file_system="Microsoft Basic Data",
+                ),
+            ],
+        ),
     ],
     ids=[
         "drobo",
@@ -183,6 +199,7 @@ from sync_camera_disk import disks, macos
         "gopro_10",
         "fujifilm_x100",
         "atomos",
+        "atem",
     ],
 )
 def test_mac_disks_to_disk_mounts(

@@ -14,6 +14,7 @@ class SourceType(enum.StrEnum):
     gopro_10 = "gopro_10"
     fujifilm_x100 = "fujifilm_x100"
     atomos = "atomos"
+    atem_iso = "atem_iso"
 
 
 class MatchType(enum.StrEnum):

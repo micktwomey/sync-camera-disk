@@ -457,3 +457,97 @@ def test_enumerate_source_files_atomos_shogun_ultra(disk_mount: DiskMount) -> No
             volume_path=disk_mount.path,
         ),
     ]
+
+
+def test_enumerate_source_files_atem_extreme_iso_sdi(disk_mount: DiskMount) -> None:
+    # /Volumes/ATEM/PyLadies/Video ISO Files/PyLadies CAM 1 01.mp4
+    # /Volumes/ATEM/PyLadies/Video ISO Files/._PyLadies CAM 1 01.mp4
+    # /Volumes/ATEM/PyLadies/Audio Source Files/PyLadies CAM 1 01.wav
+    # /Volumes/ATEM/PyLadies/Audio Source Files/._PyLadies CAM 1 01.wav
+    # /Volumes/ATEM/PyLadies/PyLadies 01.mp4
+    # /Volumes/ATEM/PyLadies/._PyLadies 01.mp4
+    # /Volumes/ATEM/PyLadies/PyLadies.drp
+    # /Volumes/ATEM/PyLadies/._PyLadies.drp
+    # /Volumes/ATEM/._.
+
+    ssd = disk_mount.path
+    (ssd / "PyLadies").mkdir()
+    (ssd / "PyLadies/Video ISO Files/").mkdir()
+    (ssd / "PyLadies/Video ISO Files/PyLadies CAM 1 01.mp4").touch()
+    (ssd / "PyLadies/Video ISO Files/._PyLadies CAM 1 01.mp4").touch()
+    (ssd / "PyLadies/Audio Source Files").mkdir()
+    (ssd / "PyLadies/Audio Source Files/PyLadies CAM 1 01.wav").touch()
+    (ssd / "PyLadies/Audio Source Files/._PyLadies CAM 1 01.wav").touch()
+    (ssd / "PyLadies/PyLadies 01.mp4").touch()
+    (ssd / "PyLadies/._PyLadies 01.mp4").touch()
+    (ssd / "PyLadies/PyLadies.drp").touch()
+    (ssd / "PyLadies/._PyLadies.drp").touch()
+    (ssd / "._.").touch()
+    (ssd / "cat").mkdir()
+    (ssd / "cat/Video ISO Files/").mkdir()
+    (ssd / "cat/Video ISO Files/cat CAM 1 01.mp4").touch()
+    (ssd / "cat/Video ISO Files/cat CAM 2 01.mp4").touch()
+    (ssd / "cat/Audio Source Files").mkdir()
+    (ssd / "cat/Audio Source Files/cat CAM 1 01.wav").touch()
+    (ssd / "cat/Audio Source Files/cat CAM 2 01.wav").touch()
+    (ssd / "cat/Video ISO Files/Media Files").mkdir()
+    (ssd / "cat/Video ISO Files/Media Files/slide.png").touch()
+    (ssd / "cat/cat 01.mp4").touch()
+    (ssd / "cat/cat 02.mp4").touch()
+    (ssd / "cat/cat.drp").touch()
+    (ssd / "cat/cat.drp").touch()
+
+    file_sets = list(
+        source.enumerate_source_files(
+            source=disk_mount, source_type=SourceType.atem_iso
+        )
+    )
+
+    # Sort files for comparison
+    for fs in file_sets:
+        fs.files.sort(key=lambda x: x.path)
+    file_sets.sort(key=lambda fs: fs.stem)
+
+    for file_set in file_sets:
+        print(f"{file_set.stem=}")
+        for file in file_set.files:
+            print(f"{file.path.parent.name=} {file.path.name=}")
+
+    assert file_sets == [
+        FileSet(
+            files=[
+                File(
+                    path=disk_mount.path
+                    / "PyLadies/Audio Source Files/PyLadies CAM 1 01.wav"
+                ),
+                File(path=disk_mount.path / "PyLadies/PyLadies 01.mp4"),
+                File(path=disk_mount.path / "PyLadies/PyLadies.drp"),
+                File(
+                    path=disk_mount.path
+                    / "PyLadies/Video ISO Files/PyLadies CAM 1 01.mp4"
+                ),
+            ],
+            stem="PyLadies",
+            prefix=Path("PyLadies"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "cat/Audio Source Files/cat CAM 1 01.wav"),
+                File(path=disk_mount.path / "cat/Audio Source Files/cat CAM 2 01.wav"),
+                File(
+                    path=disk_mount.path / "cat/Video ISO Files/Media Files/slide.png"
+                ),
+                File(path=disk_mount.path / "cat/Video ISO Files/cat CAM 1 01.mp4"),
+                File(path=disk_mount.path / "cat/Video ISO Files/cat CAM 2 01.mp4"),
+                File(path=disk_mount.path / "cat/cat 01.mp4"),
+                File(path=disk_mount.path / "cat/cat 02.mp4"),
+                File(path=disk_mount.path / "cat/cat.drp"),
+            ],
+            stem="cat",
+            prefix=Path("cat"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+    ]
