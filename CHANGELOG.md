@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.8.1] - 2024-09-19
 ### Fixed
 - Ignore none SHOGUNU files for Atomos Shogun
 
@@ -69,7 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for DJI Mini 3 Pro drone SD card
 - Add support for Sony A7 IV memory cards
 
-[Unreleased]: https://github.com/micktwomey/sync-camera-disk/compare/0.8.0...HEAD
+[Unreleased]: https://github.com/micktwomey/sync-camera-disk/compare/0.8.1...HEAD
+[0.8.1]: https://github.com/micktwomey/sync-camera-disk/compare/0.8.0...0.8.1
 [0.8.0]: https://github.com/micktwomey/sync-camera-disk/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/micktwomey/sync-camera-disk/compare/0.6.1...0.7.0
 [0.6.1]: https://github.com/micktwomey/sync-camera-disk/compare/0.6.0...0.6.1
