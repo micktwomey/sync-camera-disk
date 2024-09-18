@@ -427,6 +427,8 @@ def test_enumerate_source_files_atomos_shogun_ultra(disk_mount: DiskMount) -> No
     (ssd / "SHOGUNU_S001_S001_T002.MOV").touch()
     (ssd / "Frame Grab").mkdir()
     (ssd / "Frame Grab/SHOGUNU_S001_S001_T001.PNG").touch()
+    (ssd / "LUT").mkdir()
+    (ssd / "LUT/1_SGamut3CineSLog3_To_LC-709.cube").touch()
 
     file_sets = list(
         source.enumerate_source_files(source=disk_mount, source_type=SourceType.atomos)

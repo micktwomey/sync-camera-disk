@@ -191,6 +191,8 @@ def enumerate_source_files(
             all_files_by_prefix = {}
             for p in (source.path).glob("*"):
                 stem = p.stem
+                if not p.name.startswith("SHOGUNU"):
+                    continue
                 if stem.startswith("."):
                     continue
                 if stem.startswith("Frame Grab"):
