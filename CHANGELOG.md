@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix handling of sub folders when copying files (in particular the ATEM ISO structure). Was flattening the folder structures.
 
+### Added
+- Add --no-log-identical-operations to quieten down logs a bit
+
 ## [0.7.0] - 2024-09-18
 ### Added
 - Add ATEM ISO support
