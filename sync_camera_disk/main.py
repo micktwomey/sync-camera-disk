@@ -20,7 +20,7 @@ from sync_camera_disk.config import Config, Destination, Source, SourceType, Syn
 from . import source
 from .destination import DatedFolderDestination
 from .filter_disks import filter_disks_to_syncs
-from .operation import OperationType, perform_operation
+from .operation import OperationResult, OperationType, perform_operation
 
 app = typer.Typer()
 
@@ -135,6 +135,7 @@ def sync(
     )
     with Progress() as progress:
         syncs_task = progress.add_task("Syncs", total=len(syncs))
+        failures: list[OperationResult] = []
         for sync, source_disk in syncs:
             assert sync.destination.path.is_dir()
             destination = DatedFolderDestination(prefix=sync.destination.path)
@@ -173,6 +174,7 @@ def sync(
                             error=result.error,
                         )
                         counters["failure"] += 1
+                        failures.append(result)
                     else:
                         counters["success"] += 1
                     if dry_run:
@@ -180,6 +182,12 @@ def sync(
                     progress.update(operations_task, advance=1)
             progress.update(syncs_task, advance=1)
     LOG.info("counters", **counters)
+
+    for failure in failures:
+        LOG.error("Failure", failure=failure)
+
+    if failures:
+        raise typer.Exit(code=1)
 
 
 @app.callback()

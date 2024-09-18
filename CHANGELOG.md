@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add --no-log-identical-operations to quieten down logs a bit
+- Log failures at end of sync
 
 ## [0.7.0] - 2024-09-18
 ### Added
