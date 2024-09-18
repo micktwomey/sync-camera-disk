@@ -20,7 +20,7 @@ from sync_camera_disk.config import Config, Destination, Source, SourceType, Syn
 from . import source
 from .destination import DatedFolderDestination
 from .filter_disks import filter_disks_to_syncs
-from .operation import perform_operation
+from .operation import OperationResult, OperationType, perform_operation
 
 app = typer.Typer()
 
@@ -119,9 +119,10 @@ def show_syncs(
 @app.command()
 def sync(
     config_path: Annotated[
-        Path, typer.Argument(help="Path to probes.yml config")
+        Path, typer.Argument(help="Path to config.yml config")
     ] = DEFAULT_CONFIG_PATH,
     dry_run: bool = True,
+    log_identical_operations: bool = True,
 ) -> None:
     """Sync files from disks to configured destinations"""
     config = parse_yaml_file_as(Config, config_path)
@@ -134,6 +135,7 @@ def sync(
     )
     with Progress() as progress:
         syncs_task = progress.add_task("Syncs", total=len(syncs))
+        failures: list[OperationResult] = []
         for sync, source_disk in syncs:
             assert sync.destination.path.is_dir()
             destination = DatedFolderDestination(prefix=sync.destination.path)
@@ -151,12 +153,16 @@ def sync(
                 for operation in destination.generate_operations(file_set=file_set):
                     counters[str(operation.operation)] += 1
                     LOG.debug("operation", operation=operation)
-                    LOG.info(
-                        operation.operation,
-                        type=sync.source.type,
-                        source=operation.source,
-                        destination=operation.destination,
-                    )
+                    if (
+                        operation.operation == OperationType.identical
+                        and log_identical_operations
+                    ) or (operation.operation != OperationType.identical):
+                        LOG.info(
+                            operation.operation,
+                            type=sync.source.type,
+                            source=operation.source,
+                            destination=operation.destination,
+                        )
                     result = perform_operation(operation, dry_run=dry_run)
                     LOG.debug("operation result", result=result, success=result.success)
                     if not result.success:
@@ -168,6 +174,7 @@ def sync(
                             error=result.error,
                         )
                         counters["failure"] += 1
+                        failures.append(result)
                     else:
                         counters["success"] += 1
                     if dry_run:
@@ -175,6 +182,12 @@ def sync(
                     progress.update(operations_task, advance=1)
             progress.update(syncs_task, advance=1)
     LOG.info("counters", **counters)
+
+    for failure in failures:
+        LOG.error("Failure", failure=failure)
+
+    if failures:
+        raise typer.Exit(code=1)
 
 
 @app.callback()

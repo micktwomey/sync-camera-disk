@@ -96,3 +96,42 @@ def test_perform_operation(
         )
         == expected
     )
+
+
+def test_copy_recursively() -> None:
+    """Ensure copying child folders under a prefix does the right thing"""
+    mock_copy = mock.Mock()
+    mock_copystat = mock.Mock()
+    mock_mkdir = mock.Mock()
+    test_operation = operation.Operation(
+        source=Path("/Volumes/ATEM/PyLadies/Video ISO Files/PyLadies CAM 1 01.mp4"),
+        destination=Path(
+            "/Volumes/Cameras/ATEM SDI Extreme ISO/2024-09-16/PyLadies/Video ISO Files/PyLadies CAM 1 01.mp4"
+        ),
+        operation=operation.OperationType.copy,
+    )
+
+    assert operation.perform_operation(
+        operation=test_operation,
+        dry_run=False,
+        copy=mock_copy,
+        copystat=mock_copystat,
+        mkdir=mock_mkdir,
+    ) == operation.OperationResult(
+        dry_run=False,
+        error=None,
+        exception=None,
+        operation=test_operation,
+        success=True,
+    )
+    mock_mkdir.assert_called_once_with(
+        Path(
+            "/Volumes/Cameras/ATEM SDI Extreme ISO/2024-09-16/PyLadies/Video ISO Files"
+        )
+    )
+    mock_copy.assert_called_once_with(
+        Path("/Volumes/ATEM/PyLadies/Video ISO Files/PyLadies CAM 1 01.mp4"),
+        Path(
+            "/Volumes/Cameras/ATEM SDI Extreme ISO/2024-09-16/PyLadies/Video ISO Files/PyLadies CAM 1 01.mp4"
+        ),
+    )

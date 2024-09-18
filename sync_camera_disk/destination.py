@@ -29,7 +29,7 @@ class DatedFolderDestination(BaseModel):
     def generate_operations(self, file_set: FileSet) -> Iterable[Operation]:
         created = file_set.get_created_datetime()
         for file in file_set.files:
-            relative_path = file_set.prefix / file.path.name
+            relative_path = file.path.relative_to(file_set.volume_path)
             destination_path = self.get_destination_path(
                 path=relative_path, when=created
             )

@@ -239,7 +239,6 @@ def enumerate_source_files(
                     ):
                         if child.name.startswith("._"):
                             continue
-                        print((stem, child))
                         all_files_by_prefix[stem].files.append(File(path=child))
             yield from all_files_by_prefix.values()
         case _:
