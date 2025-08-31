@@ -596,3 +596,23 @@ ATEM_EXTREME_ISO_SDI_DISKUTIL_LIST = DiskutilList(
     VolumesFromDisks=["ATEM"],
     WholeDisks=["disk6"],
 )
+
+RODE_INTERVIEW_MIC_PRO_PLIST_OUTPUT = json.load(
+    (EXAMPLES / "mac_diskutil_rode_interview_mic_pro.json").open()
+)
+
+RODE_INTERVIEW_MIC_PRO_DISKUTIL_LIST = DiskutilList(
+    AllDisks=["disk4"],
+    AllDisksAndPartitions=[
+        DiskAndPartitions(
+            Content="",
+            DeviceIdentifier="disk4",
+            OSInternal=False,
+            Partitions=[],
+            Size=31037849600,
+            MountPoint="/Volumes/Int PRO",
+        ),
+    ],
+    VolumesFromDisks=["Int PRO"],
+    WholeDisks=["disk4"],
+)

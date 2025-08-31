@@ -1,0 +1,21 @@
+{
+  "AllDisks": [
+    "disk4"
+  ],
+  "AllDisksAndPartitions": [
+    {
+      "Content": "",
+      "DeviceIdentifier": "disk4",
+      "MountPoint": "/Volumes/Int PRO",
+      "OSInternal": false,
+      "Size": 31037849600,
+      "VolumeName": "Int PRO"
+    }
+  ],
+  "VolumesFromDisks": [
+    "Int PRO"
+  ],
+  "WholeDisks": [
+    "disk4"
+  ]
+}

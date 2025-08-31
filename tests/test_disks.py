@@ -23,6 +23,8 @@ from sync_camera_disk.testing.examples import (
     GOPRO_10_PLIST_OUTPUT,
     INSTA360_GO_2_DISKUTIL_LIST,
     INSTA360_GO_2_PLIST_OUTPUT,
+    RODE_INTERVIEW_MIC_PRO_DISKUTIL_LIST,
+    RODE_INTERVIEW_MIC_PRO_PLIST_OUTPUT,
     SONY_SD_CARD_PLIST_OUTPUT,
     SONY_SD_DISKUTIL_LIST,
 )
@@ -189,6 +191,17 @@ from sync_camera_disk.testing.examples import (
                 ),
             ],
         ),
+        (
+            RODE_INTERVIEW_MIC_PRO_PLIST_OUTPUT,
+            RODE_INTERVIEW_MIC_PRO_DISKUTIL_LIST,
+            [
+                disks.DiskMount(
+                    path=Path("/Volumes/Int PRO"),
+                    disk_size=31037849600,
+                    volume_name="Int PRO",
+                ),
+            ],
+        ),
     ],
     ids=[
         "drobo",
@@ -200,6 +213,7 @@ from sync_camera_disk.testing.examples import (
         "fujifilm_x100",
         "atomos",
         "atem",
+        "rode_interview_pro",
     ],
 )
 def test_mac_disks_to_disk_mounts(
