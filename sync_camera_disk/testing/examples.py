@@ -596,3 +596,31 @@ ATEM_EXTREME_ISO_SDI_DISKUTIL_LIST = DiskutilList(
     VolumesFromDisks=["ATEM"],
     WholeDisks=["disk6"],
 )
+
+
+FUJIFILM_XE5_PLIST_OUTPUT = json.load(
+    (EXAMPLES / "mac_diskutil_fujifilm_xe5.json").open()
+)
+
+FUJIFILM_XE5_DISKUTIL_LIST = DiskutilList(
+    AllDisks=["disk2", "disk2s1"],
+    AllDisksAndPartitions=[
+        DiskAndPartitions(
+            Content="FDisk_partition_scheme",
+            DeviceIdentifier="disk2",
+            OSInternal=False,
+            Partitions=[
+                Partition(
+                    Content="Windows_NTFS",
+                    DeviceIdentifier="disk2s1",
+                    Size=255835766784,
+                    VolumeUUID="C6161C5D-0D2B-371B-9BD8-D920BBA49DF2",
+                    MountPoint="/Volumes/Untitled",
+                ),
+            ],
+            Size=255869321216,
+        ),
+    ],
+    VolumesFromDisks=[],
+    WholeDisks=["disk2"],
+)

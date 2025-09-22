@@ -21,6 +21,8 @@ from sync_camera_disk.testing.examples import (
     DROBO_PLIST_OUTPUT,
     FUJIFILM_X100_DISKUTIL_LIST,
     FUJIFILM_X100_PLIST_OUTPUT,
+    FUJIFILM_XE5_DISKUTIL_LIST,
+    FUJIFILM_XE5_PLIST_OUTPUT,
     GOPRO_10_DISKUTIL_LIST,
     GOPRO_10_PLIST_OUTPUT,
     INSTA360_GO_2_DISKUTIL_LIST,
@@ -45,6 +47,7 @@ from sync_camera_disk.testing.examples import (
         (FUJIFILM_X100_PLIST_OUTPUT, FUJIFILM_X100_DISKUTIL_LIST),
         (ATOMOS_SHOGUN_ULTRA_PLIST_OUTPUT, ATOMOS_SHOGUN_ULTRA_DISKUTIL_LIST),
         (ATEM_EXTREME_ISO_SDI_PLIST_OUTPUT, ATEM_EXTREME_ISO_SDI_DISKUTIL_LIST),
+        (FUJIFILM_XE5_PLIST_OUTPUT, FUJIFILM_XE5_DISKUTIL_LIST),
     ],
     ids=[
         "drobo",
@@ -57,6 +60,7 @@ from sync_camera_disk.testing.examples import (
         "fujifilm_x100",
         "atomos",
         "atem",
+        "fujifilm_xe5",
     ],
 )
 def test_parse_plist_output(plist_output: Any, expected: DiskutilList) -> None:
