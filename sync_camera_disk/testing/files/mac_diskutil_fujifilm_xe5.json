@@ -1,0 +1,27 @@
+{
+  "AllDisks": [
+    "disk2",
+    "disk2s1"
+  ],
+  "AllDisksAndPartitions": [
+    {
+      "Content": "FDisk_partition_scheme",
+      "DeviceIdentifier": "disk2",
+      "OSInternal": false,
+      "Partitions": [
+        {
+          "Content": "Windows_NTFS",
+          "DeviceIdentifier": "disk2s1",
+          "MountPoint": "/Volumes/Untitled",
+          "Size": 255835766784,
+          "VolumeUUID": "C6161C5D-0D2B-371B-9BD8-D920BBA49DF2"
+        }
+      ],
+      "Size": 255869321216
+    }
+  ],
+  "VolumesFromDisks": [],
+  "WholeDisks": [
+    "disk2"
+  ]
+}

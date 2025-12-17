@@ -27,6 +27,8 @@ pytest-cov = "*"
 coverage = { extras = ["toml"], version = "*" }
 pre-commit = "*"
 changelog-manager = "*"
+pudb = "^2025.1"
+pytest-pudb = "^0.7.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -553,3 +553,103 @@ def test_enumerate_source_files_atem_extreme_iso_sdi(disk_mount: DiskMount) -> N
             volume_path=disk_mount.path,
         ),
     ]
+
+
+def test_enumerate_source_files_fujifilm_xe5(disk_mount: DiskMount) -> None:
+    # /Volumes/Untitled/ACTIVITY/25083000.LOG
+    # /Volumes/Untitled/ACTIVITY/25083100.LOG
+    # /Volumes/Untitled/DCIM/100_FUJI/DSCF0001.JPG
+    # /Volumes/Untitled/DCIM/100_FUJI/DSCF0008.HIF
+    # /Volumes/Untitled/DCIM/100_FUJI/DSCF0008.RAF
+    # /Volumes/Untitled/DCIM/100_FUJI/DSCF0387.MOV
+    # /Volumes/Untitled/FFDB/FFDB_X_E5_5C029362.db
+    # /Volumes/Untitled/UPD/
+    # /Volumes/Untitled/UPD/X-E5/
+    dcim = disk_mount.path / "DCIM" / "100_FUJI"
+    dcim.mkdir(parents=True)
+    (dcim / "DSCF0384.JPG").touch()
+    (dcim / "DSCF0384.RAF").touch()
+    (dcim / "DSCF0385.JPG").touch()
+    (dcim / "DSCF0385.RAF").touch()
+    (dcim / "DSCF0386.HIF").touch()
+    (dcim / "DSCF0386.RAF").touch()
+    (dcim / "DSCF0387.MOV").touch()
+
+    activity = disk_mount.path / "ACTIVITY"
+    activity.mkdir(parents=True)
+    (activity / "25083000.LOG").touch()
+
+    ffdb = disk_mount.path / "FFDB"
+    ffdb.mkdir(parents=True)
+    (ffdb / "FFDB_X_E5_5C029362.db").touch()
+
+    file_sets = list(
+        source.enumerate_source_files(
+            source=disk_mount, source_type=SourceType.fujifilm_xe5
+        )
+    )
+
+    # Sort files for comparison
+    for fs in file_sets:
+        fs.files.sort(key=lambda x: x.path)
+    file_sets.sort(key=lambda fs: fs.stem)
+
+    assert file_sets == [
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "ACTIVITY/25083000.LOG"),
+            ],
+            stem="25083000",
+            prefix=Path("ACTIVITY"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/100_FUJI/DSCF0384.JPG"),
+                File(path=disk_mount.path / "DCIM/100_FUJI/DSCF0384.RAF"),
+            ],
+            stem="DSCF0384",
+            prefix=Path("DCIM/100_FUJI"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/100_FUJI/DSCF0385.JPG"),
+                File(path=disk_mount.path / "DCIM/100_FUJI/DSCF0385.RAF"),
+            ],
+            stem="DSCF0385",
+            prefix=Path("DCIM/100_FUJI"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/100_FUJI/DSCF0386.HIF"),
+                File(path=disk_mount.path / "DCIM/100_FUJI/DSCF0386.RAF"),
+            ],
+            stem="DSCF0386",
+            prefix=Path("DCIM/100_FUJI"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "DCIM/100_FUJI/DSCF0387.MOV"),
+            ],
+            stem="DSCF0387",
+            prefix=Path("DCIM/100_FUJI"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+        FileSet(
+            files=[
+                File(path=disk_mount.path / "FFDB/FFDB_X_E5_5C029362.db"),
+            ],
+            stem="FFDB_X_E5_5C029362",
+            prefix=Path("FFDB"),
+            volume_identifier="abc",
+            volume_path=disk_mount.path,
+        ),
+    ]

@@ -19,6 +19,8 @@ from sync_camera_disk.testing.examples import (
     DROBO_PLIST_OUTPUT,
     FUJIFILM_X100_DISKUTIL_LIST,
     FUJIFILM_X100_PLIST_OUTPUT,
+    FUJIFILM_XE5_DISKUTIL_LIST,
+    FUJIFILM_XE5_PLIST_OUTPUT,
     GOPRO_10_DISKUTIL_LIST,
     GOPRO_10_PLIST_OUTPUT,
     INSTA360_GO_2_DISKUTIL_LIST,
@@ -189,6 +191,20 @@ from sync_camera_disk.testing.examples import (
                 ),
             ],
         ),
+        (
+            FUJIFILM_XE5_PLIST_OUTPUT,
+            FUJIFILM_XE5_DISKUTIL_LIST,
+            [
+                disks.DiskMount(
+                    path=Path("/Volumes/Untitled"),
+                    unique_identifier="c6161c5d-0d2b-371b-9bd8-d920bba49df2",
+                    disk_size=255869321216,
+                    volume_size=255835766784,
+                    volume_name=None,
+                    volume_file_system="Windows_NTFS",
+                ),
+            ],
+        ),
     ],
     ids=[
         "drobo",
@@ -200,6 +216,7 @@ from sync_camera_disk.testing.examples import (
         "fujifilm_x100",
         "atomos",
         "atem",
+        "fujifilm_xe5",
     ],
 )
 def test_mac_disks_to_disk_mounts(
@@ -216,5 +233,4 @@ def test_mac_disks_to_disk_mounts(
         "sync_camera_disk.disks.macos.diskutil_list_physical_external_disks"
     ) as diskutil_list_physical_external_disks:
         diskutil_list_physical_external_disks.return_value = plist
-
         assert list(disks.list_disks()) == expected
