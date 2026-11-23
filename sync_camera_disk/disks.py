@@ -39,13 +39,17 @@ def mac_disks_to_disk_mounts(mac_disks: macos.DiskutilList) -> Iterable[DiskMoun
                 )
 
 
-def list_disks(input: bytes | None = None) -> Iterable[DiskMount]:
+def list_disks(
+    input: bytes | None = None, include_all_disks: bool = False
+) -> Iterable[DiskMount]:
     match sys.platform:
         case "darwin":
             diskutil_disks = (
                 macos.DiskutilList.parse_raw(input)
                 if input is not None
-                else macos.diskutil_list_physical_external_disks()
+                else macos.diskutil_list_physical_external_disks(
+                    include_all_disks=include_all_disks
+                )
             )
             mac_disks = macos.parse_diskutil_output(diskutil_disks)
             yield from mac_disks_to_disk_mounts(mac_disks)

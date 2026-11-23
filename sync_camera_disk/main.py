@@ -34,18 +34,27 @@ DEFAULT_CONFIG_PATH = (
 
 
 @app.command()
-def diskutil_list_physical_external_disks() -> None:
+def diskutil_list_physical_external_disks(include_all_disks: bool = False) -> None:
     """Run diskutil to list disks and print parsed plist. MacOS only."""
-    rich.print_json(json.dumps(macos.diskutil_list_physical_external_disks()))
+    rich.print_json(
+        json.dumps(
+            macos.diskutil_list_physical_external_disks(
+                include_all_disks=include_all_disks
+            )
+        )
+    )
 
 
 @app.command()
 def list_disks(
     input: Annotated[typer.FileBinaryRead, typer.Option()] | None = None,
+    include_all_disks: bool = False,
 ) -> None:
     """List all physical external disks"""
     raw_input = input.read() if input is not None else None
-    for disk in sync_camera_disk.disks.list_disks(raw_input):
+    for disk in sync_camera_disk.disks.list_disks(
+        raw_input, include_all_disks=include_all_disks
+    ):
         rich.print_json(disk.json())
 
 
@@ -56,6 +65,7 @@ def generate_config(
         Path, typer.Argument(help="Path to probes.yml config")
     ] = DEFAULT_CONFIG_PATH,
     overwrite: bool = False,
+    include_all_disks: bool = False,
 ) -> None:
     """Generate a sample config for disks seen on the system
 
@@ -68,7 +78,9 @@ def generate_config(
     sample_config = Config(syncs=[])
 
     raw_input = input.read() if input is not None else None
-    for disk in sync_camera_disk.disks.list_disks(raw_input):
+    for disk in sync_camera_disk.disks.list_disks(
+        raw_input, include_all_disks=include_all_disks
+    ):
         sample_config.syncs.append(
             Sync(
                 destination=Destination(path=Path("/tmp/example")),
@@ -104,13 +116,19 @@ def show_syncs(
     config_path: Annotated[
         Path, typer.Argument(help="Path to probes.yml config")
     ] = DEFAULT_CONFIG_PATH,
+    include_all_disks: bool = False,
 ) -> None:
     """Show which sync configurations will be used for detected disks"""
     config = parse_yaml_file_as(Config, config_path)
     LOG.debug("config", config=config)
 
     syncs = list(
-        filter_disks_to_syncs(config=config, disks=sync_camera_disk.disks.list_disks())
+        filter_disks_to_syncs(
+            config=config,
+            disks=sync_camera_disk.disks.list_disks(
+                include_all_disks=include_all_disks
+            ),
+        )
     )
     for sync, source_disk in syncs:
         rich.print("\n".join(("---", to_yaml_str(source_disk), to_yaml_str(sync))))
@@ -123,6 +141,7 @@ def sync(
     ] = DEFAULT_CONFIG_PATH,
     dry_run: bool = True,
     log_identical_operations: bool = True,
+    include_all_disks: bool = False,
 ) -> None:
     """Sync files from disks to configured destinations"""
     config = parse_yaml_file_as(Config, config_path)
@@ -131,7 +150,12 @@ def sync(
     counters: collections.Counter[str] = collections.Counter()
 
     syncs = list(
-        filter_disks_to_syncs(config=config, disks=sync_camera_disk.disks.list_disks())
+        filter_disks_to_syncs(
+            config=config,
+            disks=sync_camera_disk.disks.list_disks(
+                include_all_disks=include_all_disks
+            ),
+        )
     )
     with Progress() as progress:
         syncs_task = progress.add_task("Syncs", total=len(syncs))

@@ -35,10 +35,13 @@ def parse_diskutil_output(plist_output: Any) -> DiskutilList:
     return DiskutilList.parse_obj(plist_output)
 
 
-def diskutil_list_physical_external_disks() -> Any:
+def diskutil_list_physical_external_disks(include_all_disks: bool = False) -> Any:
+    command = ["diskutil", "list", "-plist", "physical"]
+    if not include_all_disks:
+        command = command + ["external"]
     return plistlib.loads(
         subprocess.run(
-            ["diskutil", "list", "-plist", "physical", "external"],
+            command,
             capture_output=True,
         ).stdout
     )
