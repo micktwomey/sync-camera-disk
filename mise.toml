@@ -1,0 +1,4 @@
+[tools]
+"pypi:poetry" = "latest"
+python = "3.11"
+uv = "latest"
